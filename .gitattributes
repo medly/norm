@@ -1,0 +1,12 @@
+* text eol=lf
+
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+*.dll binary
+*.eot binary
+*.jar binary
+*.so binary
+*.o binary
+*.ttf binary
+
