@@ -21,12 +21,19 @@ class CodeGenerator(private val typeMapper: DbToKtDefaultTypeMapper = DbToKtDefa
                         .addParameters(params.map {
                             ParameterSpec.builder(
                                 it.name,
-                                typeMapper.getType(it.dbType).asTypeName().copy(nullable = it.isNullable)
+                                if (it.dbType.startsWith("_"))
+                                    ARRAY.parameterizedBy(typeMapper.getType(it.dbType).asTypeName()).copy(nullable = it.isNullable)
+                                else typeMapper.getType(it.dbType).asTypeName().copy(nullable = it.isNullable)
                             ).build()
                         }).build()
                 )
                 .addProperties(params.map {
-                    PropertySpec.builder(it.name, typeMapper.getType(it.dbType).asTypeName().copy(nullable = it.isNullable))
+                    PropertySpec.builder(it.name,
+                        if (it.dbType.startsWith("_"))
+                            ARRAY.parameterizedBy(typeMapper.getType(it.dbType).asTypeName()).copy(nullable = it.isNullable)
+                        else typeMapper.getType(it.dbType).asTypeName().copy(nullable = it.isNullable)
+
+                    )
                         .initializer(it.name)
                         .build()
                 })
@@ -152,9 +159,15 @@ class CodeGenerator(private val typeMapper: DbToKtDefaultTypeMapper = DbToKtDefa
 
         return fileBuilder.build().toString()
     }
+
+    private fun addStatementsForParams(fb: FunSpec.Builder, params: List<ParamModel>) =
+        params.forEachIndexed { i, pm ->
+            when (pm.paramClassName) {
+                "java.sql.Array" -> fb.addStatement("ps.setArray(${i + 1}, ps.connection.createArrayOf(\"${typeMapper.getType(pm.dbType).asClassName().simpleName.toUpperCase()}\", params.${pm.name}))")
+                else -> fb.addStatement("ps.setObject(${i + 1}, params.${pm.name})")
+            }
+
+        }
 }
 
-fun addStatementsForParams(fb: FunSpec.Builder, params: List<ParamModel>) =
-    params.forEachIndexed { i, pm ->
-        fb.addStatement("ps.setObject(${i + 1}, params.${pm.name})")
-    }
+

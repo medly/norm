@@ -19,7 +19,8 @@ data class ColumnModel(
 data class ParamModel(
     val name: String,
     val dbType: String,
-    val isNullable: Boolean
+    val isNullable: Boolean,
+    val paramClassName:String
 )
 
 data class SqlModel(
@@ -45,7 +46,8 @@ class SqlAnalyzer(private val connection: Connection) {
             ParamModel(
                 paramNames[it - 1].substring(1),
                 parameterMetaData.getParameterTypeName(it), // db type
-                parameterMetaData.isNullable(it) != ParameterMetaData.parameterNoNulls
+                parameterMetaData.isNullable(it) != ParameterMetaData.parameterNoNulls,
+                parameterMetaData.getParameterClassName(it)
             )
         }
 
