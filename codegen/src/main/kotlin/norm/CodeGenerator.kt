@@ -155,6 +155,6 @@ class CodeGenerator(private val typeMapper: DbToKtDefaultTypeMapper = DbToKtDefa
 }
 
 fun addStatementsForParams(fb: FunSpec.Builder, params: List<ParamModel>) =
-    params.forEach { pm ->
-        pm.places.forEach { fb.addStatement("ps.setObject($it, params.${pm.name})") }
+    params.forEachIndexed { i, pm ->
+        fb.addStatement("ps.setObject(${i + 1}, params.${pm.name})")
     }
