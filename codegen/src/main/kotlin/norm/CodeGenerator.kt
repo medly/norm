@@ -18,14 +18,14 @@ class CodeGenerator(private val typeMapper: DbToKtDefaultTypeMapper = DbToKtDefa
                 .addModifiers(KModifier.DATA)
                 .primaryConstructor(
                     FunSpec.constructorBuilder()
-                        .addParameters(params.map {
+                        .addParameters(params.distinctBy { it.name }.map {
                             ParameterSpec.builder(
                                 it.name,
                                 typeMapper.getType(it.dbType).asTypeName().copy(nullable = it.isNullable)
                             ).build()
                         }).build()
                 )
-                .addProperties(params.map {
+                .addProperties(params.distinctBy { it.name }.map {
                     PropertySpec.builder(it.name, typeMapper.getType(it.dbType).asTypeName().copy(nullable = it.isNullable))
                         .initializer(it.name)
                         .build()
