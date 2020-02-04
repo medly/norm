@@ -15,8 +15,19 @@ subprojects {
 
         testImplementation 'org.jetbrains.kotlin:kotlin-test'
         testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
+        testImplementation 'io.kotlintest:kotlintest-runner-junit5:3.4.2'
+        testCompile 'org.testcontainers:postgresql:1.12.3'
+        testCompile 'postgresql:postgresql:9.1-901-1.jdbc4'
     }
 
+    test {
+        useJUnitPlatform()
+
+        testLogging {
+            events "PASSED", "FAILED", "SKIPPED"
+            exceptionFormat "full"
+        }
+    }
 }
 
 project(":codegen") {
