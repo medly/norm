@@ -21,18 +21,13 @@ class CodeGenerator(private val typeMapper: DbToKtDefaultTypeMapper = DbToKtDefa
                         .addParameters(params.distinctBy { it.name }.map {
                             ParameterSpec.builder(
                                 it.name,
-                                if (it.dbType.startsWith("_"))
-                                    ARRAY.parameterizedBy(typeMapper.getType(it.dbType).asTypeName()).copy(nullable = it.isNullable)
-                                else typeMapper.getType(it.dbType).asTypeName().copy(nullable = it.isNullable)
+                                getTypeName(it)
                             ).build()
                         }).build()
                 )
                 .addProperties(params.distinctBy { it.name }.map {
                     PropertySpec.builder(it.name,
-                        if (it.dbType.startsWith("_"))
-                            ARRAY.parameterizedBy(typeMapper.getType(it.dbType).asTypeName()).copy(nullable = it.isNullable)
-                        else typeMapper.getType(it.dbType).asTypeName().copy(nullable = it.isNullable)
-
+                        getTypeName(it)
                     )
                         .initializer(it.name)
                         .build()
@@ -158,6 +153,12 @@ class CodeGenerator(private val typeMapper: DbToKtDefaultTypeMapper = DbToKtDefa
         }
 
         return fileBuilder.build().toString()
+    }
+
+    private fun getTypeName(it: ParamModel): TypeName {
+        return if (it.dbType.startsWith("_"))
+            ARRAY.parameterizedBy(typeMapper.getType(it.dbType).asTypeName()).copy(nullable = it.isNullable)
+        else typeMapper.getType(it.dbType).asTypeName().copy(nullable = it.isNullable)
     }
 
     private fun addStatementsForParams(fb: FunSpec.Builder, params: List<ParamModel>) =
