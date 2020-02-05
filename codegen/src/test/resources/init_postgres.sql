@@ -8,3 +8,7 @@ CREATE TABLE departments (
   id SERIAL PRIMARY KEY,
   name varchar
 );
+
+CREATE TABLE combinations(
+id serial PRIMARY KEY,
+colors varchar[]);
