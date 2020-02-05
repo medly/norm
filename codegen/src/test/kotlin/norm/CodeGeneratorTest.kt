@@ -53,7 +53,23 @@ class CodeGeneratorTest : StringSpec() {
 
                 generatedFileContent shouldContain "class FooParamSetter : ParamSetter<FooParams> {"
                 generatedFileContent shouldContain "  override fun map(ps: PreparedStatement, params: FooParams) {"
-                generatedFileContent shouldContain "    ps.setArray(1, ps.connection.createArrayOf(\"INT\", params.id))"
+                generatedFileContent shouldContain "    ps.setArray(1, ps.connection.createArrayOf(\"int4\", params.id))"
+                generatedFileContent shouldContain "  }"
+
+                println(generatedFileContent)
+            }
+
+        }
+        "should accept array as parameter while searching inside array using @> contains operator"{
+
+            dataSource.connection.use {
+                val generatedFileContent = codegen(it, "SELECT * FROM combinations WHERE colors  @> :colors ;", "com.foo", "Foo")
+                generatedFileContent shouldContain "data class FooParams("
+                generatedFileContent shouldContain "  val colors: Array<String>?"
+
+                generatedFileContent shouldContain "class FooParamSetter : ParamSetter<FooParams> {"
+                generatedFileContent shouldContain "  override fun map(ps: PreparedStatement, params: FooParams) {"
+                generatedFileContent shouldContain "    ps.setArray(1, ps.connection.createArrayOf(\"varchar\", params.colors))"
                 generatedFileContent shouldContain "  }"
 
                 println(generatedFileContent)

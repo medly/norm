@@ -87,11 +87,17 @@ class CodeGenerator(private val typeMapper: DbToKtDefaultTypeMapper = DbToKtDefa
                     .primaryConstructor(
                         FunSpec.constructorBuilder()
                             .addParameters(cols.map {
-                                ParameterSpec.builder(it.fieldName, typeMapper.getType(it.colType)).build()
+                                ParameterSpec.builder(it.fieldName,
+                                    if(it.colType.startsWith("_")) ARRAY.parameterizedBy(typeMapper.getType(it.colType).asTypeName())
+                                    else typeMapper.getType(it.colType).asTypeName()
+                                ).build()
                             }).build()
                     )
                     .addProperties(cols.map {
-                        PropertySpec.builder(it.fieldName, typeMapper.getType(it.colType))
+                        PropertySpec.builder(it.fieldName,
+                            if(it.colType.startsWith("_")) ARRAY.parameterizedBy(typeMapper.getType(it.colType).asTypeName())
+                            else typeMapper.getType(it.colType).asTypeName()
+                        )
                             .initializer(it.fieldName)
                             .build()
                     })
@@ -99,7 +105,10 @@ class CodeGenerator(private val typeMapper: DbToKtDefaultTypeMapper = DbToKtDefa
             )
 
             val constructArgs = "\n" + cols.map {
-                "${it.fieldName} = rs.getObject(\"${it.colName}\") as ${typeMapper.getType(it.colType).asClassName().canonicalName}"
+                if(it.colType.startsWith("_"))
+                    "${it.fieldName} = rs.getArray(\"${it.colName}\").array as Array<${typeMapper.getType(it.colType).asClassName().simpleName}>"
+                else
+                    "${it.fieldName} = rs.getObject(\"${it.colName}\") as ${typeMapper.getType(it.colType).asClassName().canonicalName}"
             }.joinToString(",\n  ")
 
             fileBuilder.addType(
@@ -164,7 +173,7 @@ class CodeGenerator(private val typeMapper: DbToKtDefaultTypeMapper = DbToKtDefa
     private fun addStatementsForParams(fb: FunSpec.Builder, params: List<ParamModel>) =
         params.forEachIndexed { i, pm ->
             when (pm.paramClassName) {
-                "java.sql.Array" -> fb.addStatement("ps.setArray(${i + 1}, ps.connection.createArrayOf(\"${typeMapper.getType(pm.dbType).asClassName().simpleName.toUpperCase()}\", params.${pm.name}))")
+                "java.sql.Array" -> fb.addStatement("ps.setArray(${i + 1}, ps.connection.createArrayOf(\"${pm.dbType.removePrefix("_")}\", params.${pm.name}))")
                 else -> fb.addStatement("ps.setObject(${i + 1}, params.${pm.name})")
             }
 
