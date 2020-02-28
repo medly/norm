@@ -1,5 +1,7 @@
 package norm
 
+import com.squareup.kotlinpoet.ARRAY
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import org.postgresql.util.PGobject
 import java.math.BigDecimal
 import kotlin.reflect.KClass
@@ -29,7 +31,8 @@ class DbToKtDefaultTypeMapper {
 
             "varchar" -> String::class
             "text" -> String::class
-            "_varchar" -> Array<String>::class
+            "_varchar" -> String::class
+            "_int4" -> Int::class
             else -> String::class
         }
     }
