@@ -16,7 +16,7 @@ subprojects {
         testImplementation 'org.jetbrains.kotlin:kotlin-test'
         testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
         testImplementation 'io.kotlintest:kotlintest-runner-junit5:3.4.2'
-        testCompile 'org.testcontainers:postgresql:1.12.5'
+        testCompile 'org.testcontainers:postgresql:1.13.0'
         testCompile 'postgresql:postgresql:9.1-901-1.jdbc4'
     }
 
