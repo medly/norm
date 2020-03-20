@@ -77,5 +77,22 @@ class CodeGeneratorTest : StringSpec() {
 
         }
 
+        "should support jsonb type along with array"{
+
+            dataSource.connection.use {
+                val generatedFileContent = codegen(it, "insert into owners(colors,details) VALUES(:colors,:details)", "com.foo", "Foo")
+                generatedFileContent shouldContain "data class FooParams("
+                generatedFileContent shouldContain "  val colors: Array<String>?"
+                generatedFileContent shouldContain "  val details: PGobject?"
+
+                generatedFileContent shouldContain "class FooParamSetter : ParamSetter<FooParams> {"
+                generatedFileContent shouldContain "  override fun map(ps: PreparedStatement, params: FooParams) {"
+                generatedFileContent shouldContain "    ps.setArray(1, ps.connection.createArrayOf(\"varchar\", params.colors))"
+                generatedFileContent shouldContain "    ps.setObject(2, params.details)"
+                generatedFileContent shouldContain "  }"
+
+                println(generatedFileContent)
+            }
+        }
     }
 }
