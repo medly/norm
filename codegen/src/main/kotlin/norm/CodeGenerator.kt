@@ -172,8 +172,8 @@ class CodeGenerator(private val typeMapper: DbToKtDefaultTypeMapper = DbToKtDefa
 
     private fun addStatementsForParams(fb: FunSpec.Builder, params: List<ParamModel>) =
         params.forEachIndexed { i, pm ->
-            when (pm.paramClassName) {
-                "java.sql.Array" -> fb.addStatement("ps.setArray(${i + 1}, ps.connection.createArrayOf(\"${pm.dbType.removePrefix("_")}\", params.${pm.name}))")
+            when {
+                pm.dbType.startsWith("_") -> fb.addStatement("ps.setArray(${i + 1}, ps.connection.createArrayOf(\"${pm.dbType.removePrefix("_")}\", params.${pm.name}))")
                 else -> fb.addStatement("ps.setObject(${i + 1}, params.${pm.name})")
             }
 
