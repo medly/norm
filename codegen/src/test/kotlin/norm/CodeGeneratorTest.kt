@@ -1,6 +1,7 @@
 package norm
 
 import io.kotlintest.matchers.string.shouldContain
+import io.kotlintest.matchers.string.shouldNotContain
 import io.kotlintest.specs.StringSpec
 import org.junit.ClassRule
 import org.postgresql.ds.PGSimpleDataSource
@@ -90,6 +91,16 @@ class CodeGeneratorTest : StringSpec() {
                 generatedFileContent shouldContain "    ps.setArray(1, ps.connection.createArrayOf(\"varchar\", params.colors))"
                 generatedFileContent shouldContain "    ps.setObject(2, params.details)"
                 generatedFileContent shouldContain "  }"
+
+                println(generatedFileContent)
+            }
+        }
+
+        "should generate empty params class if inputs params are not present" {
+            dataSource.connection.use {
+                val generatedFileContent = codegen(it, "select * from  employees", "com.foo", "Foo")
+                generatedFileContent shouldNotContain  "data class FooParams"
+                generatedFileContent shouldContain "class FooParams"
 
                 println(generatedFileContent)
             }
