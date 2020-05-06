@@ -1,7 +1,8 @@
 CREATE TABLE employees (
   id SERIAL PRIMARY KEY,
   first_name varchar,
-  last_name varchar
+  last_name varchar,
+  date_of_birth date
 );
 
 CREATE TABLE departments (
@@ -18,3 +19,4 @@ id serial PRIMARY KEY,
 colors varchar[],
 details jsonb
 )
+

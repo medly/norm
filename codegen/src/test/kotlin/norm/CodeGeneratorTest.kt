@@ -94,5 +94,15 @@ class CodeGeneratorTest : StringSpec() {
                 println(generatedFileContent)
             }
         }
+
+        "should map date to LocalDate"{
+            dataSource.connection.use{
+                val generatedFileContent = codegen(it, "select * from employees WHERE date_of_birth BETWEEN :fromDate AND :tillDate" , "com.foo", "Foo")
+                generatedFileContent shouldContain "data class FooParams("
+                generatedFileContent shouldContain "  val fromDate: LocalDate?"
+                generatedFileContent shouldContain "  val tillDate: LocalDate?"
+            }
+
+        }
     }
 }

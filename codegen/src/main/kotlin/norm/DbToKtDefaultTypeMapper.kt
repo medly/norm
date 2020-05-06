@@ -4,6 +4,7 @@ import com.squareup.kotlinpoet.ARRAY
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import org.postgresql.util.PGobject
 import java.math.BigDecimal
+import java.time.LocalDate
 import kotlin.reflect.KClass
 
 typealias typeMapper = (String) -> KClass<*>
@@ -24,7 +25,7 @@ class DbToKtDefaultTypeMapper {
 
             "bool" -> Boolean::class
             "timestamptz" -> java.sql.Timestamp::class
-            "date" -> java.sql.Date::class
+            "date" -> LocalDate::class
             "timestamp" -> java.sql.Timestamp::class
 
             "jsonb" -> PGobject::class
