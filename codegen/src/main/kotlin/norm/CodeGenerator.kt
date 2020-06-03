@@ -15,7 +15,7 @@ class CodeGenerator(private val typeMapper: DbToKtDefaultTypeMapper = DbToKtDefa
 
         fileBuilder.addType(
             TypeSpec.classBuilder(ClassName(packageName, paramsClassName))
-                .addModifiers(KModifier.DATA)
+                .also { if (params.isNotEmpty()) it.addModifiers(KModifier.DATA) }
                 .primaryConstructor(
                     FunSpec.constructorBuilder()
                         .addParameters(params.distinctBy { it.name }.map {
