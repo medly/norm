@@ -2,7 +2,9 @@ package norm
 
 import io.kotlintest.matchers.string.shouldContain
 import io.kotlintest.matchers.string.shouldNotContain
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
+import org.apache.commons.io.FileUtils
 import org.junit.ClassRule
 import org.postgresql.ds.PGSimpleDataSource
 
@@ -22,15 +24,9 @@ class CodeGeneratorTest : StringSpec() {
 
         "Query class generator" {
             dataSource.connection.use {
-                val generatedFileContent = codegen(it, "select * from employees where first_name = :name order by :field", "com.foo", "Foo")
-
-                generatedFileContent shouldContain "data class FooResult("
-                generatedFileContent shouldContain "data class FooParams("
-                generatedFileContent shouldContain "class FooParamSetter : ParamSetter<FooParams> {"
-                generatedFileContent shouldContain "class FooRowMapper : RowMapper<FooResult> {"
-                generatedFileContent shouldContain "class FooQuery : Query<FooParams, FooResult> {"
-
-                println(generatedFileContent)
+                val expectedFileContent = FileUtils.getFile( "src", "test", "resources", "generated/employee-query").readText().trimIndent()
+                val generatedFileContent = codegen(it, "select * from employees where first_name = :name order by :field", "com.foo", "Foo").trimIndent()
+                generatedFileContent shouldBe expectedFileContent
             }
         }
 
