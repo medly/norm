@@ -19,16 +19,11 @@ class CodeGenerator(private val typeMapper: DbToKtDefaultTypeMapper = DbToKtDefa
                 .primaryConstructor(
                     FunSpec.constructorBuilder()
                         .addParameters(params.distinctBy { it.name }.map {
-                            ParameterSpec.builder(
-                                it.name,
-                                getTypeName(it)
-                            ).build()
+                            ParameterSpec.builder(it.name, getTypeName(it)).build()
                         }).build()
                 )
                 .addProperties(params.distinctBy { it.name }.map {
-                    PropertySpec.builder(it.name,
-                        getTypeName(it)
-                    )
+                    PropertySpec.builder(it.name, getTypeName(it))
                         .initializer(it.name)
                         .build()
                 })
@@ -88,28 +83,24 @@ class CodeGenerator(private val typeMapper: DbToKtDefaultTypeMapper = DbToKtDefa
                         FunSpec.constructorBuilder()
                             .addParameters(cols.map {
                                 ParameterSpec.builder(it.fieldName,
-                                    if(it.colType.startsWith("_")) ARRAY.parameterizedBy(typeMapper.getType(it.colType).asTypeName())
-                                    else typeMapper.getType(it.colType).asTypeName()
+                                    getTypeName(it)
                                 ).build()
                             }).build()
                     )
                     .addProperties(cols.map {
-                        PropertySpec.builder(it.fieldName,
-                            if(it.colType.startsWith("_")) ARRAY.parameterizedBy(typeMapper.getType(it.colType).asTypeName())
-                            else typeMapper.getType(it.colType).asTypeName()
-                        )
+                        PropertySpec.builder(it.fieldName, getTypeName(it))
                             .initializer(it.fieldName)
                             .build()
                     })
                     .build()
             )
 
-            val constructArgs = "\n" + cols.map {
-                if(it.colType.startsWith("_"))
-                    "${it.fieldName} = rs.getArray(\"${it.colName}\").array as Array<${typeMapper.getType(it.colType).asClassName().simpleName}>"
+            val constructArgs = "\n" + cols.joinToString(",\n  ") {
+                if (it.colType.startsWith("_"))
+                    "${it.fieldName} = rs.getArray(\"${it.colName}\").array as ${getTypeName(it)}>"
                 else
-                    "${it.fieldName} = rs.getObject(\"${it.colName}\") as ${typeMapper.getType(it.colType).asClassName().canonicalName}"
-            }.joinToString(",\n  ")
+                    "${it.fieldName} = rs.getObject(\"${it.colName}\") as ${getTypeName(it)}"
+            }
 
             fileBuilder.addType(
                 TypeSpec.classBuilder(ClassName(packageName, rowMapperClassName))
@@ -164,11 +155,13 @@ class CodeGenerator(private val typeMapper: DbToKtDefaultTypeMapper = DbToKtDefa
         return fileBuilder.build().toString()
     }
 
-    private fun getTypeName(it: ParamModel): TypeName {
-        return if (it.dbType.startsWith("_"))
-            ARRAY.parameterizedBy(typeMapper.getType(it.dbType).asTypeName()).copy(nullable = it.isNullable)
-        else typeMapper.getType(it.dbType).asTypeName().copy(nullable = it.isNullable)
-    }
+    private fun getTypeName(it: ColumnModel) =
+        if (it.colType.startsWith("_")) ARRAY.parameterizedBy(typeMapper.getType(it.colType, false)).copy(nullable = it.isNullable)
+        else typeMapper.getType(it.colType, it.isNullable)
+
+    private fun getTypeName(it: ParamModel) =
+        if (it.dbType.startsWith("_")) ARRAY.parameterizedBy(typeMapper.getType(it.dbType, false)).copy(nullable = it.isNullable)
+        else typeMapper.getType(it.dbType, it.isNullable)
 
     private fun addStatementsForParams(fb: FunSpec.Builder, params: List<ParamModel>) =
         params.forEachIndexed { i, pm ->

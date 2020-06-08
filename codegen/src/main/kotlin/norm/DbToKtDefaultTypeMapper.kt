@@ -1,15 +1,13 @@
 package norm
 
-import com.squareup.kotlinpoet.ARRAY
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.TypeName
+import com.squareup.kotlinpoet.asTypeName
 import org.postgresql.util.PGobject
 import java.math.BigDecimal
-import kotlin.reflect.KClass
-
-typealias typeMapper = (String) -> KClass<*>
 
 class DbToKtDefaultTypeMapper {
-    fun getType(colType: String): KClass<*> {
+    fun getType(colType: String, nullable: Boolean): TypeName {
         return when (colType.toLowerCase()) {
             "int4" -> Int::class
             "int" -> Int::class
@@ -34,6 +32,6 @@ class DbToKtDefaultTypeMapper {
             "_varchar" -> String::class
             "_int4" -> Int::class
             else -> String::class
-        }
+        }.asTypeName().copy(nullable = nullable)
     }
 }
