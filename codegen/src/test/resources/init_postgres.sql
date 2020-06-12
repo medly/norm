@@ -17,4 +17,4 @@ CREATE TABLE owners(
 id serial PRIMARY KEY,
 colors varchar[],
 details jsonb
-)
+);
