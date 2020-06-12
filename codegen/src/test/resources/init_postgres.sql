@@ -12,3 +12,9 @@ CREATE TABLE departments (
 CREATE TABLE combinations(
 id serial PRIMARY KEY,
 colors varchar[]);
+
+CREATE TABLE owners(
+id serial PRIMARY KEY,
+colors varchar[],
+details jsonb
+)

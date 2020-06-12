@@ -1,7 +1,10 @@
 package norm
 
 import io.kotlintest.matchers.string.shouldContain
+import io.kotlintest.matchers.string.shouldNotContain
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
+import org.apache.commons.io.FileUtils
 import org.junit.ClassRule
 import org.postgresql.ds.PGSimpleDataSource
 
@@ -21,15 +24,9 @@ class CodeGeneratorTest : StringSpec() {
 
         "Query class generator" {
             dataSource.connection.use {
-                val generatedFileContent = codegen(it, "select * from employees where first_name = :name order by :field", "com.foo", "Foo")
-
-                generatedFileContent shouldContain "data class FooResult("
-                generatedFileContent shouldContain "data class FooParams("
-                generatedFileContent shouldContain "class FooParamSetter : ParamSetter<FooParams> {"
-                generatedFileContent shouldContain "class FooRowMapper : RowMapper<FooResult> {"
-                generatedFileContent shouldContain "class FooQuery : Query<FooParams, FooResult> {"
-
-                println(generatedFileContent)
+                val expectedFileContent = FileUtils.getFile( "src", "test", "resources", "generated/employee-query").readText().trimIndent()
+                val generatedFileContent = codegen(it, "select * from employees where first_name = :name order by :field", "com.foo", "Foo").trimIndent()
+                generatedFileContent shouldBe expectedFileContent
             }
         }
 
@@ -77,5 +74,32 @@ class CodeGeneratorTest : StringSpec() {
 
         }
 
+        "should support jsonb type along with array"{
+
+            dataSource.connection.use {
+                val generatedFileContent = codegen(it, "insert into owners(colors,details) VALUES(:colors,:details)", "com.foo", "Foo")
+                generatedFileContent shouldContain "data class FooParams("
+                generatedFileContent shouldContain "  val colors: Array<String>?"
+                generatedFileContent shouldContain "  val details: PGobject?"
+
+                generatedFileContent shouldContain "class FooParamSetter : ParamSetter<FooParams> {"
+                generatedFileContent shouldContain "  override fun map(ps: PreparedStatement, params: FooParams) {"
+                generatedFileContent shouldContain "    ps.setArray(1, ps.connection.createArrayOf(\"varchar\", params.colors))"
+                generatedFileContent shouldContain "    ps.setObject(2, params.details)"
+                generatedFileContent shouldContain "  }"
+
+                println(generatedFileContent)
+            }
+        }
+
+        "should generate empty params class if inputs params are not present" {
+            dataSource.connection.use {
+                val generatedFileContent = codegen(it, "select * from  employees", "com.foo", "Foo")
+                generatedFileContent shouldNotContain  "data class FooParams"
+                generatedFileContent shouldContain "class FooParams"
+
+                println(generatedFileContent)
+            }
+        }
     }
 }

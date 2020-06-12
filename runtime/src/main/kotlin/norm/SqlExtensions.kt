@@ -35,12 +35,12 @@ fun ResultSet.toTable(columnNames: List<String> = getColumnNames()): List<List<A
 
 // TODO - handle prepareStatements Failure as well
 
-fun PreparedStatement.withParams(params: List<Any> = listOf()): PreparedStatement =
+fun PreparedStatement.withParams(params: List<Any?> = listOf()): PreparedStatement =
     this.also { self ->
         params.forEachIndexed { index, param -> self.setObject(index + 1, param) }
     }
 
-fun PreparedStatement.withBatches(batchedParams: List<List<Any>> = listOf()) =
+fun PreparedStatement.withBatches(batchedParams: List<List<Any?>> = listOf()) =
     this.also { ps ->
         batchedParams.forEach { params ->
             ps.withParams(params).addBatch()
@@ -52,7 +52,7 @@ fun Connection.executeCommand(sql: String, params: List<Any> = listOf()): Int =
         .withParams(params)
         .use { it.executeUpdate() } // auto-close ps
 
-fun Connection.batchExecuteCommand(sql: String, batchedParams: List<List<Any>> = listOf()): List<Int> =
+fun Connection.batchExecuteCommand(sql: String, batchedParams: List<List<Any?>> = listOf()): List<Int> =
     this.prepareStatement(sql)
         .withBatches(batchedParams)
         .use { it.executeBatch() }
