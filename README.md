@@ -180,3 +180,39 @@ Hence, Norm has two packages:
                 println(res.address)
             }
         ```  
+
+
+
+## Command Line Interface
+
+Norm CLI can be used to generate Kotlin files corresponding to SQL files. 
+
+we can provide multiple of files using  `-f some/path/a.sql -f some/path/b.sql`. This will generate Kotlin files
+at `some.path.A.kt` & `some.path.A.kt`. If we want to exclude `some` from package name then we must use `-b` option 
+with the base dir `-f some/path/a.sql -f some/path/b.sql -b some/`. Now the kotlin files will be generated in package
+`path.A.kt` & `path.A.kt` inside the `output-dir`.
+
+If option `--in-dir` is used, all the `*.sql` files will be used for code generation.
+
+```
+$ norm-cli --help
+
+Usage: norm-cli [OPTIONS]
+
+  Generates Kotlin Source files for given SQL files using the Postgres
+  database connection
+
+Options:
+  -j, --jdbc-url TEXT        JDBC connection URL (can use env var PG_JDBC_URL)
+  -u, --username TEXT        Username (can use env var PG_USERNAME)
+  -p, --password TEXT        Password (can use env var PG_PASSWORD)
+  -b, --base-path DIRECTORY  relative path from this dir will be used to infer
+                             package name
+  -f, --file FILE            [Multiple] SQL files, the file path will be used
+                             to infer package name
+  -d, --in-dir DIRECTORY     Dir containing .sql files, relative path from
+                             this dir will be used to infer package name
+  -o, --out-dir DIRECTORY    Output dir where source should be generated
+  -h, --help                 Show this message and exit
+
+```
