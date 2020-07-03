@@ -1,6 +1,5 @@
-package norm
+package norm.typemapper
 
-import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asTypeName
 import org.postgresql.util.PGobject
