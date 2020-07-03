@@ -23,6 +23,7 @@ fun main(args: Array<String>) = NormCli().main(args)
  * Can use env variable to pass in sensitive information
  */
 class NormCli : CliktCommand( // command name is inferred as norm-cli
+        name = "norm-codegen",
         help = """
             Generates Kotlin Source files for given SQL files using the Postgres database connection
         """

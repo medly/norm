@@ -195,9 +195,9 @@ with the base dir `-f some/path/a.sql -f some/path/b.sql -b some/`. Now the kotl
 If option `--in-dir` is used, all the `*.sql` files will be used for code generation.
 
 ```
-$ norm-cli --help
+$ norm-codegen --help
 
-Usage: norm-cli [OPTIONS]
+Usage: norm-codegen [OPTIONS]
 
   Generates Kotlin Source files for given SQL files using the Postgres
   database connection

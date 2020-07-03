@@ -54,7 +54,7 @@ project(":codegen") {
 project(":cli") {
     apply plugin: 'application'
 
-    applicationName = 'norm-cli'
+    applicationName = 'norm-codegen'
     mainClassName = "norm.cli.NormCliKt"
 
     dependencies {
