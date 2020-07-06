@@ -1,13 +1,10 @@
-import io.kotlintest.matchers.string.shouldContain
-import io.kotlintest.matchers.string.shouldNotContain
-import io.kotlintest.shouldBe
-import io.kotlintest.specs.StringSpec
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldNotContain
 import norm.analyzer.SqlAnalyzer
 import norm.codegen.CodeGenerator
-import org.apache.commons.io.FileUtils
 import org.junit.ClassRule
 import org.postgresql.ds.PGSimpleDataSource
-import org.testcontainers.containers.PostgreSQLContainer
 import java.sql.Connection
 
 fun codegen(

@@ -1,10 +1,10 @@
 import exit.assertion.ExitAssertions
-import io.kotlintest.Spec
-import io.kotlintest.TestCase
-import io.kotlintest.TestResult
-import io.kotlintest.matchers.string.shouldContain
-import io.kotlintest.shouldBe
-import io.kotlintest.specs.StringSpec
+import io.kotest.core.spec.Spec
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.core.test.TestCase
+import io.kotest.core.test.TestResult
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import norm.cli.main
 import org.junit.ClassRule
 import org.testcontainers.containers.PostgreSQLContainer
