@@ -1,6 +1,9 @@
 package norm.cli
 
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.arguments.multiple
+import com.github.ajalt.clikt.parameters.arguments.unique
 import com.github.ajalt.clikt.parameters.options.*
 import com.github.ajalt.clikt.parameters.types.file
 import norm.api.NormApi
@@ -42,7 +45,12 @@ class NormCli : CliktCommand( // command name is inferred as norm-cli
             .file(canBeFile = false, canBeDir = true, mustExist = true)
             .default(File(".")) // Current working dir
 
-    private val inputFiles by option("-f", "--file", help = "[Multiple] SQL files, the file path will be used to infer package name")
+    private val inputFilesAsOpts by option("-f", "--file", help = "[Multiple] SQL files, the file path relative to base path (-b) will be used to infer package name")
+            .file(canBeFile = true, canBeDir = false, mustExist = true)
+            .multiple()
+            .unique()
+
+    private val sqlFiles by argument() // give meaningful name for CLI help message
             .file(canBeFile = true, canBeDir = false, mustExist = true)
             .multiple()
             .unique()
@@ -67,8 +75,8 @@ class NormCli : CliktCommand( // command name is inferred as norm-cli
                     }
                 }
 
-                // If dir is provided, relativize to basePath
-                inputFiles.forEach { sqlFile ->
+                // if file list is explicitly provided, it is relative to basePath
+                (inputFilesAsOpts + sqlFiles).forEach { sqlFile ->
                     IO(sqlFile, basePath, outDir).process(normApi::generate)
                 }
             }
