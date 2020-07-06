@@ -1,3 +1,4 @@
 rootProject.name = 'norm'
 include 'runtime'
 include 'codegen'
+include 'cli'

@@ -1,13 +1,25 @@
-package norm
-
 import io.kotlintest.matchers.string.shouldContain
 import io.kotlintest.matchers.string.shouldNotContain
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
+import norm.analyzer.SqlAnalyzer
+import norm.codegen.CodeGenerator
 import org.apache.commons.io.FileUtils
 import org.junit.ClassRule
 import org.postgresql.ds.PGSimpleDataSource
+import org.testcontainers.containers.PostgreSQLContainer
+import java.sql.Connection
 
+fun codegen(
+        connection: Connection,
+        query: String,
+        packageName: String,
+        baseName: String
+): String {
+    val sqlModel = SqlAnalyzer(connection).sqlModel(query)
+
+    return CodeGenerator().generate(sqlModel, packageName, baseName)
+}
 
 class CodeGeneratorTest : StringSpec() {
 
@@ -24,9 +36,43 @@ class CodeGeneratorTest : StringSpec() {
 
         "Query class generator" {
             dataSource.connection.use {
-                val expectedFileContent = FileUtils.getFile( "src", "test", "resources", "generated/employee-query").readText().trimIndent()
                 val generatedFileContent = codegen(it, "select * from employees where first_name = :name order by :field", "com.foo", "Foo").trimIndent()
-                generatedFileContent shouldBe expectedFileContent
+                generatedFileContent shouldContain """
+data class FooParams(
+  val name: String?,
+  val field: String?
+)
+
+class FooParamSetter : ParamSetter<FooParams> {
+  override fun map(ps: PreparedStatement, params: FooParams) {
+    ps.setObject(1, params.name)
+    ps.setObject(2, params.field)
+  }
+}
+
+data class FooResult(
+  val id: Int,
+  val firstName: String?,
+  val lastName: String?
+)
+
+class FooRowMapper : RowMapper<FooResult> {
+  override fun map(rs: ResultSet): FooResult = FooResult(
+  id = rs.getObject("id") as kotlin.Int,
+    firstName = rs.getObject("first_name") as kotlin.String?,
+    lastName = rs.getObject("last_name") as kotlin.String?)
+}
+
+class FooQuery : Query<FooParams, FooResult> {
+  override val sql: String = "select * from employees where first_name = ? order by ?"
+
+  override val mapper: RowMapper<FooResult> = FooRowMapper()
+
+  override val paramSetter: ParamSetter<FooParams> = FooParamSetter()
+}
+                """.trimIndent()
+
+
             }
         }
 

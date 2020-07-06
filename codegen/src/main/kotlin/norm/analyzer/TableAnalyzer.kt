@@ -1,5 +1,9 @@
-package norm
+package norm.analyzer
 
+import norm.model.ColumnModel
+import norm.model.TableModel
+import norm.util.toCamelCase
+import norm.toList
 import java.sql.Connection
 
 class TableAnalyzer(private val connection: Connection) {
@@ -17,10 +21,10 @@ class TableAnalyzer(private val connection: Connection) {
 
     private fun fromHashMap(it: Map<String, Any?>): ColumnModel {
         return ColumnModel(
-            fieldName = toCamelCase(it["COLUMN_NAME"].toString()),
-            colType = it["TYPE_NAME"].toString(),
-            isNullable = true,
-            colName = it["COLUMN_NAME"].toString()
+                fieldName = toCamelCase(it["COLUMN_NAME"].toString()),
+                colType = it["TYPE_NAME"].toString(),
+                isNullable = true,
+                colName = it["COLUMN_NAME"].toString()
         )
     }
 }

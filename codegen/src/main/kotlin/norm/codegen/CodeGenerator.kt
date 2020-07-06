@@ -1,7 +1,11 @@
-package norm
+package norm.codegen
 
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import norm.model.ColumnModel
+import norm.model.ParamModel
+import norm.model.SqlModel
+import norm.typemapper.DbToKtDefaultTypeMapper
 
 class CodeGenerator(private val typeMapper: DbToKtDefaultTypeMapper = DbToKtDefaultTypeMapper()) {
 

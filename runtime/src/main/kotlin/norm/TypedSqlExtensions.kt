@@ -4,6 +4,11 @@ import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 
+/**
+ * Enable Type Safe queries and commands
+ *
+ */
+
 interface RowMapper<T> {
     fun map(rs: ResultSet): T
 }
@@ -26,17 +31,19 @@ interface Query<P, R> {
 data class CommandResult(val updatedRecordsCount: Int)
 
 fun <R : Any> ResultSet.toList(mapper: RowMapper<R>): List<R> =
-    this.use { generateSequence { if (this.next()) mapper.map(this) else null }.toList() }
+        this.use { generateSequence { if (this.next()) mapper.map(this) else null }.toList() }
 
 fun <P, R : Any> Query<P, R>.query(connection: Connection, params: P): List<R> =
-    connection.prepareStatement(sql)
-        .also { paramSetter.map(it, params) }
-        .executeQuery()
-        .toList(mapper)
+        connection
+                .prepareStatement(sql)
+                .also { paramSetter.map(it, params) }
+                .executeQuery()
+                .toList(mapper)
 
 fun <P : Any> Command<P>.command(connection: Connection, params: P): CommandResult =
-    connection.prepareStatement(sql)
-        .also { paramSetter.map(it, params) }
-        .executeUpdate()
-        .let { CommandResult(it) }
+        connection
+                .prepareStatement(sql)
+                .also { paramSetter.map(it, params) }
+                .executeUpdate()
+                .let { CommandResult(it) }
 

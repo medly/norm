@@ -5,6 +5,8 @@ plugins {
 subprojects {
     apply plugin: 'org.jetbrains.kotlin.jvm'
 
+    group = 'com.medly.norm'
+
     repositories {
         jcenter()
     }
@@ -16,8 +18,8 @@ subprojects {
         testImplementation 'org.jetbrains.kotlin:kotlin-test'
         testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
         testImplementation 'io.kotlintest:kotlintest-runner-junit5:3.4.2'
-        testCompile 'org.testcontainers:postgresql:1.14.3'
-        testCompile 'postgresql:postgresql:9.1-901-1.jdbc4'
+        testImplementation 'org.testcontainers:postgresql:1.14.3'
+        testImplementation 'postgresql:postgresql:9.1-901-1.jdbc4'
     }
 
     test {
@@ -26,6 +28,12 @@ subprojects {
         testLogging {
             events "PASSED", "FAILED", "SKIPPED"
             exceptionFormat "full"
+        }
+    }
+
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions {
+            jvmTarget = "1.8"
         }
     }
 }
@@ -40,5 +48,18 @@ project(":codegen") {
         implementation 'org.postgresql:postgresql:42.2.14'
 
         testImplementation("io.kotlintest:kotlintest-runner-junit5:3.3.0")
+    }
+}
+
+project(":cli") {
+    apply plugin: 'application'
+
+    applicationName = 'norm-codegen'
+    mainClassName = "norm.cli.NormCliKt"
+
+    dependencies {
+        implementation project(":codegen")
+        implementation 'org.postgresql:postgresql:42.2.14'
+        implementation "com.github.ajalt:clikt:2.7.1"
     }
 }
