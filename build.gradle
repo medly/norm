@@ -22,6 +22,9 @@ subprojects {
         testImplementation 'io.kotest:kotest-runner-junit5-jvm:4.1.1'
         testImplementation 'io.kotest:kotest-assertions-core-jvm:4.1.1'
         testImplementation 'io.kotest:kotest-property-jvm:4.1.1'
+        testImplementation 'io.kotest:kotest-extensions-testcontainers-jvm:4.1.1'
+        testImplementation 'io.kotest:kotest-plugins-pitest:4.1.1'
+        testImplementation 'io.kotest:kotest-runner-console-jvm:4.1.1'
     }
 
     test {
@@ -44,7 +47,7 @@ project(":codegen") {
     dependencies {
         implementation project(":runtime")
 
-        implementation 'org.postgresql:postgresql:42.2.14'
+        api 'org.postgresql:postgresql:42.2.14'
         implementation 'com.squareup:kotlinpoet:1.6.0'
 
         implementation 'org.atteo:evo-inflector:1.2.2'

@@ -8,7 +8,6 @@ import norm.fs.IO
 import norm.fs.globSearch
 import norm.util.withPGConnection
 import java.io.File
-import kotlin.system.exitProcess
 
 
 /**
@@ -56,26 +55,20 @@ class NormCli : CliktCommand( // command name is inferred as norm-cli
 
 
     override fun run() {
-        try {
-            withPGConnection(jdbcUrl, username, password) { connection ->
-                val normApi = NormApi(connection)
+        withPGConnection(jdbcUrl, username, password) { connection ->
+            val normApi = NormApi(connection)
 
-                // If dir is provided, relativize to itself
-                inputDir?.let { dir ->
-                    globSearch(dir, "**.sql").forEach { sqlFile ->
-                        IO(sqlFile, dir, outDir).process(normApi::generate)
-                    }
-                }
-
-                // If dir is provided, relativize to basePath
-                inputFiles.forEach { sqlFile ->
-                    IO(sqlFile, basePath, outDir).process(normApi::generate)
+            // If dir is provided, relativize to itself
+            inputDir?.let { dir ->
+                globSearch(dir, "**.sql").forEach { sqlFile ->
+                    IO(sqlFile, dir, outDir).process(normApi::generate)
                 }
             }
-            exitProcess(0)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            exitProcess(1)
+
+            // If dir is provided, relativize to basePath
+            inputFiles.forEach { sqlFile ->
+                IO(sqlFile, basePath, outDir).process(normApi::generate)
+            }
         }
     }
 }

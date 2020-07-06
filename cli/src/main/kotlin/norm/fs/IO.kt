@@ -14,12 +14,11 @@ class IO(
     private val packageName = parentPath.replace(File.separator, ".")
     private val baseName = toTitleCase(nameWithoutExtension)
     private val outFileParentDir = File(outDir, parentPath)
-    private val outputFile = File(outFileParentDir, "$baseName.kt")
+    private val outputKotlinFile = File(outFileParentDir, "$baseName.kt")
 
     fun process(block: (query: String, packageName: String, baseName: String) -> String) {
         outFileParentDir.mkdirs()
-        println("will write to $outputFile")
-        outputFile.writeText(block(sqlFile.readText(), packageName, baseName))
+        outputKotlinFile.writeText(block(sqlFile.readText(), packageName, baseName))
     }
 }
 
