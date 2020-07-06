@@ -138,6 +138,20 @@ class FooQuery : Query<FooParams, FooResult> {
             }
         }
 
+        "should correctly map array columns"{
+
+            dataSource.connection.use {
+                val generatedFileContent = codegen(it, "select * from owners", "com.foo", "Foo")
+                generatedFileContent shouldContain "class FooRowMapper : RowMapper<FooResult> {\n" +
+                    "  override fun map(rs: ResultSet): FooResult = FooResult(\n" +
+                    "  id = rs.getObject(\"id\") as kotlin.Int,\n" +
+                    "    colors = rs.getArray(\"colors\").array as kotlin.Array<kotlin.String>?,\n" +
+                    "    details = rs.getObject(\"details\") as org.postgresql.util.PGobject?)\n" +
+                    "}"
+                println(generatedFileContent)
+            }
+        }
+
         "should generate empty params class if inputs params are not present" {
             dataSource.connection.use {
                 val generatedFileContent = codegen(it, "select * from  employees", "com.foo", "Foo")

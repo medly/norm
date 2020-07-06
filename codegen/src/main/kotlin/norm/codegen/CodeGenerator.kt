@@ -101,7 +101,7 @@ class CodeGenerator(private val typeMapper: DbToKtDefaultTypeMapper = DbToKtDefa
 
             val constructArgs = "\n" + cols.joinToString(",\n  ") {
                 if (it.colType.startsWith("_"))
-                    "${it.fieldName} = rs.getArray(\"${it.colName}\").array as ${getTypeName(it)}>"
+                    "${it.fieldName} = rs.getArray(\"${it.colName}\").array as ${getTypeName(it)}"
                 else
                     "${it.fieldName} = rs.getObject(\"${it.colName}\") as ${getTypeName(it)}"
             }
