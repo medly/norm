@@ -6,7 +6,7 @@ import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
 import norm.test.utils.PgContainer
 import norm.test.utils.codegen
-import norm.util.withPGConnection
+import norm.util.withPgConnection
 
 
 class CodeGeneratorTest : StringSpec() {
@@ -18,7 +18,7 @@ class CodeGeneratorTest : StringSpec() {
     init {
 
         "Query class generator" {
-            withPGConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
+            withPgConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
                 val generatedFileContent = codegen(it, "select * from employees where first_name = :name order by :field", "com.foo", "Foo").trimIndent()
                 generatedFileContent shouldContain """
 data class FooParams(
@@ -60,7 +60,7 @@ class FooQuery : Query<FooParams, FooResult> {
         }
 
         "Command class generator"{
-            withPGConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
+            withPgConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
                 val generatedFileContent = codegen(it, "insert into employees (first_name,last_name) values (:firstName, :lastName)", "com.foo", "Foo")
                 generatedFileContent shouldContain "data class FooParams("
                 generatedFileContent shouldContain "class FooParamSetter : ParamSetter<FooParams> {"
@@ -72,7 +72,7 @@ class FooQuery : Query<FooParams, FooResult> {
 
         "Should generate query parameter with Array type while using ANY operator"{
 
-            withPGConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
+            withPgConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
                 val generatedFileContent = codegen(it, "select * from  employees where id = ANY(:id) ", "com.foo", "Foo")
                 generatedFileContent shouldContain "data class FooParams("
                 generatedFileContent shouldContain "  val id: Array<Int>?"
@@ -88,7 +88,7 @@ class FooQuery : Query<FooParams, FooResult> {
         }
         "should accept array as parameter while searching inside array using @> contains operator"{
 
-            withPGConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
+            withPgConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
                 val generatedFileContent = codegen(it, "SELECT * FROM combinations WHERE colors  @> :colors ;", "com.foo", "Foo")
                 generatedFileContent shouldContain "data class FooParams("
                 generatedFileContent shouldContain "  val colors: Array<String>?"
@@ -105,7 +105,7 @@ class FooQuery : Query<FooParams, FooResult> {
 
         "should support jsonb type along with array"{
 
-            withPGConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
+            withPgConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
                 val generatedFileContent = codegen(it, "insert into owners(colors,details) VALUES(:colors,:details)", "com.foo", "Foo")
                 generatedFileContent shouldContain "data class FooParams("
                 generatedFileContent shouldContain "  val colors: Array<String>?"
@@ -123,7 +123,7 @@ class FooQuery : Query<FooParams, FooResult> {
 
         "should correctly map array columns"{
 
-            withPGConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
+            withPgConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
                 val generatedFileContent = codegen(it, "select * from owners", "com.foo", "Foo")
                 generatedFileContent shouldContain "class FooRowMapper : RowMapper<FooResult> {\n" +
                         "  override fun map(rs: ResultSet): FooResult = FooResult(\n" +
@@ -136,7 +136,7 @@ class FooQuery : Query<FooParams, FooResult> {
         }
 
         "should generate empty params class if inputs params are not present" {
-            withPGConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
+            withPgConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
                 val generatedFileContent = codegen(it, "select * from  employees", "com.foo", "Foo")
                 generatedFileContent shouldNotContain "data class FooParams"
                 generatedFileContent shouldContain "class FooParams"
