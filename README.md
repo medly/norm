@@ -197,7 +197,7 @@ If option `--in-dir` is used, all the `*.sql` files will be used for code genera
 ```
 $ norm-codegen --help
 
-Usage: norm-codegen [OPTIONS]
+Usage: norm-codegen [OPTIONS] [SQLFILES]...
 
   Generates Kotlin Source files for given SQL files using the Postgres
   database connection
@@ -208,8 +208,8 @@ Options:
   -p, --password TEXT        Password (can use env var PG_PASSWORD)
   -b, --base-path DIRECTORY  relative path from this dir will be used to infer
                              package name
-  -f, --file FILE            [Multiple] SQL files, the file path will be used
-                             to infer package name
+  -f, --file FILE            [Multiple] SQL files, the file path relative to
+                             base path (-b) will be used to infer package name
   -d, --in-dir DIRECTORY     Dir containing .sql files, relative path from
                              this dir will be used to infer package name
   -o, --out-dir DIRECTORY    Output dir where source should be generated
