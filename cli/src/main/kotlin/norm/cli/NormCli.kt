@@ -9,9 +9,8 @@ import com.github.ajalt.clikt.parameters.types.file
 import norm.api.NormApi
 import norm.fs.IO
 import norm.fs.globSearch
-import norm.util.withPGConnection
+import norm.util.withPgConnection
 import java.io.File
-import kotlin.system.exitProcess
 
 
 /**
@@ -63,27 +62,19 @@ class NormCli : CliktCommand( // command name is inferred as norm-cli
             .required()
 
 
-    override fun run() {
-        try {
-            withPGConnection(jdbcUrl, username, password) { connection ->
-                val normApi = NormApi(connection)
+    override fun run() = withPgConnection(jdbcUrl, username, password) { connection ->
+        val normApi = NormApi(connection)
 
-                // If dir is provided, relativize to itself
-                inputDir?.let { dir ->
-                    globSearch(dir, "**.sql").forEach { sqlFile ->
-                        IO(sqlFile, dir, outDir).process(normApi::generate)
-                    }
-                }
-
-                // if file list is explicitly provided, it is relative to basePath
-                (inputFilesAsOpts + sqlFiles).forEach { sqlFile ->
-                    IO(sqlFile, basePath, outDir).process(normApi::generate)
-                }
+        // If dir is provided, relativize to itself
+        inputDir?.let { dir ->
+            globSearch(dir, "**.sql").forEach { sqlFile ->
+                IO(sqlFile, dir, outDir).process(normApi::generate)
             }
-            exitProcess(0)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            exitProcess(1)
+        }
+
+        // if file list is explicitly provided, it is relative to basePath
+        (inputFilesAsOpts + sqlFiles).forEach { sqlFile ->
+            IO(sqlFile, basePath, outDir).process(normApi::generate)
         }
     }
 }

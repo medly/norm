@@ -1,41 +1,24 @@
-import io.kotlintest.matchers.string.shouldContain
-import io.kotlintest.matchers.string.shouldNotContain
-import io.kotlintest.shouldBe
-import io.kotlintest.specs.StringSpec
-import norm.analyzer.SqlAnalyzer
-import norm.codegen.CodeGenerator
-import org.apache.commons.io.FileUtils
-import org.junit.ClassRule
-import org.postgresql.ds.PGSimpleDataSource
-import org.testcontainers.containers.PostgreSQLContainer
-import java.sql.Connection
+package norm.codegen
 
-fun codegen(
-        connection: Connection,
-        query: String,
-        packageName: String,
-        baseName: String
-): String {
-    val sqlModel = SqlAnalyzer(connection).sqlModel(query)
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.extensions.testcontainers.perSpec
+import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldNotContain
+import norm.test.utils.PgContainer
+import norm.test.utils.codegen
+import norm.util.withPgConnection
 
-    return CodeGenerator().generate(sqlModel, packageName, baseName)
-}
 
 class CodeGeneratorTest : StringSpec() {
 
-    @ClassRule
-    private val postgreSQLContainer = MyPostgreSQLContainer().withInitScript("init_postgres.sql")
+    private val pgContainer: PgContainer = PgContainer().withInitScript("init_postgres.sql")
+
+    override fun listeners() = listOf(pgContainer.perSpec())
 
     init {
-        postgreSQLContainer.start()
-        val dataSource = PGSimpleDataSource().also {
-            it.setUrl(postgreSQLContainer.jdbcUrl)
-            it.user = postgreSQLContainer.username
-            it.password = postgreSQLContainer.password
-        }
 
         "Query class generator" {
-            dataSource.connection.use {
+            withPgConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
                 val generatedFileContent = codegen(it, "select * from employees where first_name = :name order by :field", "com.foo", "Foo").trimIndent()
                 generatedFileContent shouldContain """
 data class FooParams(
@@ -77,7 +60,7 @@ class FooQuery : Query<FooParams, FooResult> {
         }
 
         "Command class generator"{
-            dataSource.connection.use {
+            withPgConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
                 val generatedFileContent = codegen(it, "insert into employees (first_name,last_name) values (:firstName, :lastName)", "com.foo", "Foo")
                 generatedFileContent shouldContain "data class FooParams("
                 generatedFileContent shouldContain "class FooParamSetter : ParamSetter<FooParams> {"
@@ -89,7 +72,7 @@ class FooQuery : Query<FooParams, FooResult> {
 
         "Should generate query parameter with Array type while using ANY operator"{
 
-            dataSource.connection.use {
+            withPgConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
                 val generatedFileContent = codegen(it, "select * from  employees where id = ANY(:id) ", "com.foo", "Foo")
                 generatedFileContent shouldContain "data class FooParams("
                 generatedFileContent shouldContain "  val id: Array<Int>?"
@@ -105,7 +88,7 @@ class FooQuery : Query<FooParams, FooResult> {
         }
         "should accept array as parameter while searching inside array using @> contains operator"{
 
-            dataSource.connection.use {
+            withPgConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
                 val generatedFileContent = codegen(it, "SELECT * FROM combinations WHERE colors  @> :colors ;", "com.foo", "Foo")
                 generatedFileContent shouldContain "data class FooParams("
                 generatedFileContent shouldContain "  val colors: Array<String>?"
@@ -122,7 +105,7 @@ class FooQuery : Query<FooParams, FooResult> {
 
         "should support jsonb type along with array"{
 
-            dataSource.connection.use {
+            withPgConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
                 val generatedFileContent = codegen(it, "insert into owners(colors,details) VALUES(:colors,:details)", "com.foo", "Foo")
                 generatedFileContent shouldContain "data class FooParams("
                 generatedFileContent shouldContain "  val colors: Array<String>?"
@@ -140,22 +123,22 @@ class FooQuery : Query<FooParams, FooResult> {
 
         "should correctly map array columns"{
 
-            dataSource.connection.use {
+            withPgConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
                 val generatedFileContent = codegen(it, "select * from owners", "com.foo", "Foo")
                 generatedFileContent shouldContain "class FooRowMapper : RowMapper<FooResult> {\n" +
-                    "  override fun map(rs: ResultSet): FooResult = FooResult(\n" +
-                    "  id = rs.getObject(\"id\") as kotlin.Int,\n" +
-                    "    colors = rs.getArray(\"colors\").array as kotlin.Array<kotlin.String>?,\n" +
-                    "    details = rs.getObject(\"details\") as org.postgresql.util.PGobject?)\n" +
-                    "}"
+                        "  override fun map(rs: ResultSet): FooResult = FooResult(\n" +
+                        "  id = rs.getObject(\"id\") as kotlin.Int,\n" +
+                        "    colors = rs.getArray(\"colors\").array as kotlin.Array<kotlin.String>?,\n" +
+                        "    details = rs.getObject(\"details\") as org.postgresql.util.PGobject?)\n" +
+                        "}"
                 println(generatedFileContent)
             }
         }
 
         "should generate empty params class if inputs params are not present" {
-            dataSource.connection.use {
+            withPgConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
                 val generatedFileContent = codegen(it, "select * from  employees", "com.foo", "Foo")
-                generatedFileContent shouldNotContain  "data class FooParams"
+                generatedFileContent shouldNotContain "data class FooParams"
                 generatedFileContent shouldContain "class FooParams"
 
                 println(generatedFileContent)
