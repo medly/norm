@@ -38,7 +38,7 @@ Norm requires us to have an active database connection to precompile queries for
 
 ## Getting Started
 
-### 1. Setting up the schema
+### 1. Set up the schema
 
 Start postgres server locally. Create schemas and tables needed for your application or repository.
 
@@ -61,7 +61,7 @@ create table persons(
 All the migrations need to be run before using norm codegen to generate classes.
 
 
-### 2. write the sql queries
+### 2. Write the sql queries
 
 norm needs two directories defined in the project:
 1. input directory - contains all sql files
@@ -75,7 +75,7 @@ add a sql file in this sql's source dir with path, say eg `sql/person/get-all-pe
 SELECT * FROM persons WHERE AGE > :age;
 ```
 
-### 3. Generating the code
+### 3. Generate the code 
 
 
 #### Command Line Interface
@@ -139,7 +139,8 @@ We can optionally add a task in gradle which would execute norm's code generatio
 Run `./gradlew compileNorm`. It will generate a folder within `gen` (output dir) with the same name as folder inside `sql` (input dir), `person`.
 All the generated classes would be within a file named - ```GetAllPersonsAboveGivenAge``` (title case name of sql file)
 
-          
+#### Peek at the generated code
+
 The content of generated file would look like:
 ```kotlin 
 package person
