@@ -6,9 +6,9 @@ Norm is purpose built for use with Kotlin and PostgreSQL. While most ORMs and Da
 
 Norm has two major components, a compile time code generator and a very lighteight runtime module. 
 
-Norm’s code generator connects with our development database. Using JDBC, it infers just enough information from the SQL query/command to generate the Kotlin code. For each of the given SQL query it generate required code to execute the query and map the result-set to kotlin data classes. As a result, we get type safe database access layer with zero boilerplate code. 
+1. Norm’s code generator connects with our development database. Using JDBC, it infers just enough information from the SQL query/command to generate the Kotlin code. For each of the given SQL query it generate required code to execute the query and map the result-set to kotlin data classes. As a result, we get type safe database access layer with zero boilerplate code. 
 
-Norm's Runtime provides extension methods to execute the generated code with ease. 
+2. Norm's Runtime provides extension methods to execute the generated code with ease. 
 
 ## Norm's Design Choices:
 
@@ -35,6 +35,7 @@ Norm requires us to have an active database connection to precompile queries for
 - Provides generic extension functions and interfaces which can be used without code-gen. These simplify usage of [Connection](https://docs.oracle.com/javase/7/docs/api/java/sql/Connection.html) or [ResultSet](https://docs.oracle.com/javase/7/docs/api/java/sql/ResultSet.html) or [PreparedStatement](https://docs.oracle.com/javase/7/docs/api/java/sql/PreparedStatement.html) classes.
 - Adds extentions on these interfaces to be able to execute query/command, map result to a list, execute batch commands and queries etc.
 
+---
 
 ## Getting Started
 
@@ -115,25 +116,25 @@ Options:
 #### Using a custom gradle task:
 
 We can optionally add a task in gradle which would execute norm's code generation
-```groovy
+```gradle
 
-    configurations { norm }
+configurations { norm }
 
-    dependencies {
-        norm "org.postgresql:postgresql:$postgresVersion" 
-        norm 'com.medly.norm:runtime:$normVersion'
-        norm 'com.medly.norm:cli:$normVersion'
-    } 
+dependencies {
+    norm "org.postgresql:postgresql:$postgresVersion" 
+    norm 'com.medly.norm:runtime:$normVersion'
+    norm 'com.medly.norm:cli:$normVersion'
+} 
 
-    task compileNorm(type: JavaExec) {
-        classpath = configurations.norm  
-        main = "norm.cli.NormCliKt"
-        args "${rootProject.rootDir}/sql"                //input dir
-        args "${rootProject.rootDir}/gen"                //output dir
-        args "jdbc:postgresql://localhost/postgres"      //postgres connection string with db name
-        args "postgres"                                  //db username
-        args ""                                          //db password (optional for local) 
-    }
+task compileNorm(type: JavaExec) {
+    classpath = configurations.norm  
+    main = "norm.cli.NormCliKt"
+    args "${rootProject.rootDir}/sql"                //input dir
+    args "${rootProject.rootDir}/gen"                //output dir
+    args "jdbc:postgresql://localhost/postgres"      //postgres connection string with db name
+    args "postgres"                                  //db username
+    args ""                                          //db password (optional for local) 
+}
 ```     
 
 Run `./gradlew compileNorm`. It will generate a folder within `gen` (output dir) with the same name as folder inside `sql` (input dir), `person`.
@@ -199,7 +200,7 @@ class GetAllPersonsAboveGivenAgeQuery : Query<GetAllPersonsAboveGivenAgeParams,
 
 Add norm runtime dependencies
 
-```groovy
+```gradle
 
 // add jitpack repo
 repositories {		
@@ -226,19 +227,13 @@ Create an instance of DataSource using the postgresql driver(already added in de
   }
 ``` 
 
-Execute the query
+Finally we can execute the query:
 
 ```kotlin
   val result = dataSource.connection.use { connection -> 
       GetAllPersonsAboveGivenAgeQuery().query(connection, GetAllPersonsAboveGivenAgeParams(20))
   }
-  result.map { res ->
-      println(res.id)
-      println(res.name)
-      println(res.age)
-      println(res.occupation)
-      println(res.address)
-  }
+  result.forEach { println(it.toString()) }
 ```  
 
 Have fun :)
