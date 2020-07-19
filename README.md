@@ -122,8 +122,8 @@ configurations { norm }
 
 dependencies {
     norm "org.postgresql:postgresql:$postgresVersion" 
-    norm 'com.medly.norm:runtime:$normVersion'
-    norm 'com.medly.norm:cli:$normVersion'
+    norm "com.medly.norm:runtime:$normVersion"
+    norm "com.medly.norm:cli:$normVersion"
 } 
 
 task compileNorm(type: JavaExec) {
@@ -212,7 +212,7 @@ dependencies {
     implementation "org.postgresql:postgresql:$postgresVersion" 
 
     // add norm runtime dependency
-    implementation 'com.medly.norm:runtime:$normVersion'
+    implementation "com.medly.norm:runtime:$normVersion"
 } 
 ```      
 
