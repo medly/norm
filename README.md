@@ -1,8 +1,8 @@
 # Norm 
 
-NORM is acronym for Not an ORM
+NORM is acronym for Not an ORM.
 
-Norm is purpose built for use with Kotlin and PostgreSQL. While most ORMs and Database access libraries try to hide SQL, Norm works on just the opposite principle. SQL is powerful and battle tested. Norm gives it back the control it deserves. 
+Norm is purpose built for use with Kotlin and PostgreSQL. While most ORMs and Database access libraries try to hide SQL, Norm works on just the opposite principle. SQL is powerful and battle tested. Norm gives SQL back the control it deserves. 
 
 Norm has two major components, a compile time code generator and a very lighteight runtime module. 
 
@@ -22,7 +22,7 @@ Norm has two major components, a compile time code generator and a very lighteig
 
 ## How Norm works
 
-Norm requires us to have an active database connection to precompile queries for typesafe data access. Codegen uses this connection to generate the code.
+Norm requires us to have an active database connection to precompile queries for typesafe data access. Codegen module uses this connection to generate the code.
     
 #### Codegen
 - Norm opens a connection to development database. 
