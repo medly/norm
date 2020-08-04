@@ -22,6 +22,7 @@ class DbToKtDefaultTypeMapper {
             "bool" -> Boolean::class
             "timestamptz" -> java.sql.Timestamp::class
             "date" -> java.sql.Date::class
+            "time" -> java.sql.Time::class
             "timestamp" -> java.sql.Timestamp::class
 
             "jsonb" -> PGobject::class
