@@ -16,8 +16,8 @@ class CodeGenerator(private val typeMapper: DbToKtDefaultTypeMapper = DbToKtDefa
         val paramSetterClassName = "${baseName}ParamSetter"
 
         val fileBuilder = FileSpec.builder(packageName, baseName)
-        val tableCount = cols.distinctBy { it.tableName }.count()
-        val primaryTableName = cols.distinctBy { it.tableName }.first().tableName
+
+
         fileBuilder.addType(
             TypeSpec.classBuilder(ClassName(packageName, paramsClassName))
                 .also { if (params.isNotEmpty()) it.addModifiers(KModifier.DATA) }
@@ -80,6 +80,8 @@ class CodeGenerator(private val typeMapper: DbToKtDefaultTypeMapper = DbToKtDefa
             val resultClassName = "${baseName}Result"
             val queryClassName = "${baseName}Query"
             val rowMapperClassName = "${baseName}RowMapper"
+            val tableCount = cols.distinctBy { it.tableName }.count()
+            val primaryTableName = cols.distinctBy { it.tableName }.first().tableName
 
             fileBuilder.addType(
                 TypeSpec.classBuilder(ClassName(packageName, resultClassName))
