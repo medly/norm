@@ -34,10 +34,11 @@ class SqlAnalyzer(private val connection: Connection) {
         val res = if (resultSetMetaData != null) { // it is a query
             (1..resultSetMetaData.columnCount).map {
                 ColumnModel(
-                        toCamelCase(resultSetMetaData.getColumnName(it)),
-                        resultSetMetaData.getColumnTypeName(it),
-                        resultSetMetaData.getColumnName(it),
-                        resultSetMetaData.isNullable(it) != ResultSetMetaData.columnNoNulls
+                    toCamelCase(resultSetMetaData.getColumnName(it)),
+                    resultSetMetaData.getColumnTypeName(it),
+                    resultSetMetaData.getColumnName(it),
+                    resultSetMetaData.isNullable(it) != ResultSetMetaData.columnNoNulls,
+                    resultSetMetaData.getTableName(it)
                 )
             }
         } else { // it is a command

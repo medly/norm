@@ -16,7 +16,8 @@ class CodeGenerator(private val typeMapper: DbToKtDefaultTypeMapper = DbToKtDefa
         val paramSetterClassName = "${baseName}ParamSetter"
 
         val fileBuilder = FileSpec.builder(packageName, baseName)
-
+        val tableCount = cols.distinctBy { it.tableName }.count()
+        val primaryTableName = cols.distinctBy { it.tableName }.first().tableName
         fileBuilder.addType(
             TypeSpec.classBuilder(ClassName(packageName, paramsClassName))
                 .also { if (params.isNotEmpty()) it.addModifiers(KModifier.DATA) }
@@ -86,13 +87,15 @@ class CodeGenerator(private val typeMapper: DbToKtDefaultTypeMapper = DbToKtDefa
                     .primaryConstructor(
                         FunSpec.constructorBuilder()
                             .addParameters(cols.map {
+                                val typeName =if(tableCount > 1 && it.tableName!=primaryTableName) getTypeName(it).copy(nullable = true) else getTypeName(it)
                                 ParameterSpec.builder(it.fieldName,
-                                    getTypeName(it)
+                                    typeName
                                 ).build()
                             }).build()
                     )
                     .addProperties(cols.map {
-                        PropertySpec.builder(it.fieldName, getTypeName(it))
+                        val typeName =if(tableCount > 1 && it.tableName!=primaryTableName) getTypeName(it).copy(nullable = true) else getTypeName(it)
+                        PropertySpec.builder(it.fieldName,typeName)
                             .initializer(it.fieldName)
                             .build()
                     })
@@ -101,9 +104,9 @@ class CodeGenerator(private val typeMapper: DbToKtDefaultTypeMapper = DbToKtDefa
 
             val constructArgs = "\n" + cols.joinToString(",\n  ") {
                 if (it.colType.startsWith("_"))
-                    "${it.fieldName} = rs.getArray(\"${it.colName}\").array as ${getTypeName(it)}"
+                    "${it.fieldName} = rs.getArray(\"${it.colName}\").array as ${if(tableCount > 1 && it.tableName!=primaryTableName) getTypeName(it).copy(nullable = true) else getTypeName(it)}"
                 else
-                    "${it.fieldName} = rs.getObject(\"${it.colName}\") as ${getTypeName(it)}"
+                    "${it.fieldName} = rs.getObject(\"${it.colName}\") as ${if(tableCount > 1 && it.tableName!=primaryTableName) getTypeName(it).copy(nullable = true) else getTypeName(it)}"
             }
 
             fileBuilder.addType(

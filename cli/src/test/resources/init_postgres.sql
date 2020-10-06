@@ -19,3 +19,14 @@ CREATE TABLE owners(
     colors varchar[],
     details jsonb
 );
+
+CREATE TABLE genre(
+genre_id INT PRIMARY KEY,
+title VARCHAR NOT NULL,
+description VARCHAR NOT NULL
+);
+
+CREATE TABLE movie(
+id serial PRIMARY KEY,
+name varchar,
+genre_id INT NOT NULL REFERENCES genre(genre_id));

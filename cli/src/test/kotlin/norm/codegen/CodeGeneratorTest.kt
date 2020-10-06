@@ -144,5 +144,27 @@ class FooQuery : Query<FooParams, FooResult> {
                 println(generatedFileContent)
             }
         }
+
+        "non nullable columns of the joinee table should be nullable"{
+
+            withPgConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
+                val sql="select * from movie a JOIN genre b ON a.genre_id = b.genre_id"
+                val generatedFileContent = codegen(it, sql, "com.foo", "Foo")
+                generatedFileContent shouldContain """
+       class FooRowMapper : RowMapper<FooResult> {
+         override fun map(rs: ResultSet): FooResult = FooResult(
+         id = rs.getObject("id") as kotlin.Int,
+           name = rs.getObject("name") as kotlin.String?,
+           genreId = rs.getObject("genre_id") as kotlin.Int,
+           genreId = rs.getObject("genre_id") as kotlin.Int?,
+           title = rs.getObject("title") as kotlin.String?,
+           description = rs.getObject("description") as kotlin.String?)
+       }
+ """.trimIndent()
+
+                println(generatedFileContent)
+            }
+
+        }
     }
 }
