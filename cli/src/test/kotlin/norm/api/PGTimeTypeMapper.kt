@@ -1,6 +1,6 @@
-package norm.test.utils
+package norm.api
 
-import norm.typemapper.DbToKtTypeMapper
+import norm.api.typemapper.DbToKtTypeMapper
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import kotlin.reflect.KClass

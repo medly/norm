@@ -1,4 +1,4 @@
-package norm.typemapper
+package norm.api.typemapper
 
 import kotlin.reflect.KClass
 

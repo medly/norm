@@ -1,5 +1,6 @@
 package norm.typemapper
 
+import norm.api.typemapper.DbToKtTypeMapper
 import org.postgresql.util.PGobject
 import java.math.BigDecimal
 import kotlin.reflect.KClass
