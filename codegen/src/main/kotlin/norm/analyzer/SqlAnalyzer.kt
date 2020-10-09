@@ -12,7 +12,8 @@ import java.sql.ResultSetMetaData
  * Can Analyze the Tables and PreparedStatements without executing Queries.
  */
 class SqlAnalyzer(private val connection: Connection) {
-    val namedParamsRegex = "(?<!:)(:\\w+)".toRegex() // TODO extract
+    private val namedParamsRegex = "(?<!:)(:\\w+)".toRegex() // TODO extract
+    private val leftJoinRegex = "(?i)(?:LEFT\\s+JOIN\\s+)(?<tables>\\b\\S+\\b)".toRegex()
 
     fun sqlModel(namedParamSql: String): SqlModel {
 
@@ -29,15 +30,18 @@ class SqlAnalyzer(private val connection: Connection) {
             )
         }
 
+        val leftJoinedTables = leftJoinRegex.findAll(namedParamSql).map { it.groups[1]?.value }.toList()
         val resultSetMetaData: ResultSetMetaData? = preparedStatement.metaData
-
         val res = if (resultSetMetaData != null) { // it is a query
+
             (1..resultSetMetaData.columnCount).map {
+                val isNullable = leftJoinedTables.contains(resultSetMetaData.getTableName(it)) ||
+                    (resultSetMetaData.isNullable(it) != ResultSetMetaData.columnNoNulls)
                 ColumnModel(
                         toCamelCase(resultSetMetaData.getColumnName(it)),
                         resultSetMetaData.getColumnTypeName(it),
                         resultSetMetaData.getColumnName(it),
-                        resultSetMetaData.isNullable(it) != ResultSetMetaData.columnNoNulls
+                        isNullable
                 )
             }
         } else { // it is a command
