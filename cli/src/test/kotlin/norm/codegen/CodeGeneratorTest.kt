@@ -21,38 +21,38 @@ class CodeGeneratorTest : StringSpec() {
             withPgConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
                 val generatedFileContent = codegen(it, "select * from employees where first_name = :name order by :field", "com.foo", "Foo").trimIndent()
                 generatedFileContent shouldContain """
-data class FooParams(
-  val name: String?,
-  val field: String?
-)
+                    data class FooParams(
+                      val name: String?,
+                      val field: String?
+                    )
 
-class FooParamSetter : ParamSetter<FooParams> {
-  override fun map(ps: PreparedStatement, params: FooParams) {
-    ps.setObject(1, params.name)
-    ps.setObject(2, params.field)
-  }
-}
+                    class FooParamSetter : ParamSetter<FooParams> {
+                      override fun map(ps: PreparedStatement, params: FooParams) {
+                        ps.setObject(1, params.name)
+                        ps.setObject(2, params.field)
+                      }
+                    }
 
-data class FooResult(
-  val id: Int,
-  val firstName: String?,
-  val lastName: String?
-)
+                    data class FooResult(
+                      val id: Int,
+                      val firstName: String?,
+                      val lastName: String?
+                    )
 
-class FooRowMapper : RowMapper<FooResult> {
-  override fun map(rs: ResultSet): FooResult = FooResult(
-  id = rs.getObject("id") as kotlin.Int,
-    firstName = rs.getObject("first_name") as kotlin.String?,
-    lastName = rs.getObject("last_name") as kotlin.String?)
-}
+                    class FooRowMapper : RowMapper<FooResult> {
+                      override fun map(rs: ResultSet): FooResult = FooResult(
+                      id = rs.getObject("id") as kotlin.Int,
+                        firstName = rs.getObject("first_name") as kotlin.String?,
+                        lastName = rs.getObject("last_name") as kotlin.String?)
+                    }
 
-class FooQuery : Query<FooParams, FooResult> {
-  override val sql: String = "select * from employees where first_name = ? order by ?"
+                    class FooQuery : Query<FooParams, FooResult> {
+                      override val sql: String = "select * from employees where first_name = ? order by ?"
 
-  override val mapper: RowMapper<FooResult> = FooRowMapper()
+                      override val mapper: RowMapper<FooResult> = FooRowMapper()
 
-  override val paramSetter: ParamSetter<FooParams> = FooParamSetter()
-}
+                      override val paramSetter: ParamSetter<FooParams> = FooParamSetter()
+                    }
                 """.trimIndent()
 
 
@@ -142,6 +142,31 @@ class FooQuery : Query<FooParams, FooResult> {
                 generatedFileContent shouldContain "class FooParams"
 
                 println(generatedFileContent)
+            }
+        }
+
+        "should generate nullable fields for the columns of the left joined table" {
+            val query = """
+                select e.*, p.id as project_id, p.employee_id, p.name, d.id as department_id, d.name as department_name
+                from employees e
+                left join projects p on e.id = p.employee_id
+                left join departments d on p.department = d.name
+            """.trimIndent()
+            val queryResultClass = """
+                data class FooResult(
+                  val id: Int,
+                  val firstName: String?,
+                  val lastName: String?,
+                  val projectId: Int?,
+                  val employeeId: Int?,
+                  val name: String?,
+                  val departmentId: Int?,
+                  val departmentName: String?
+                )
+            """.trimIndent()
+            withPgConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
+                val generatedFileContent = codegen(it, query, "com.foo", "Foo")
+                generatedFileContent shouldContain queryResultClass
             }
         }
     }
