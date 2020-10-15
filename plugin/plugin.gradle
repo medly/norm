@@ -1,0 +1,18 @@
+plugins {
+    id "com.palantir.idea-test-fix" version "0.1.0"
+    id 'java-gradle-plugin'
+}
+
+dependencies {
+    compileOnly gradleApi()
+    testImplementation gradleTestKit()
+}
+
+gradlePlugin {
+    plugins {
+        register("norm") {
+            id = "com.medly.norm"
+            implementationClass = "com.medly.norm.NormPlugin"
+        }
+    }
+}

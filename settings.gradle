@@ -2,3 +2,5 @@ rootProject.name = 'norm'
 include 'runtime'
 include 'codegen'
 include 'cli'
+include 'plugin'
+project(':plugin').setBuildFileName('plugin.gradle')
