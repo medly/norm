@@ -46,6 +46,7 @@ subprojects {
 project(":codegen") {
     dependencies {
         implementation project(":runtime")
+        api project(":api")
 
         api 'org.postgresql:postgresql:42.2.14'
         implementation 'com.squareup:kotlinpoet:1.6.0'

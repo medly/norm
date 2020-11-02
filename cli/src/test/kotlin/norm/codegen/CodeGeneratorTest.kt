@@ -121,6 +121,26 @@ class FooQuery : Query<FooParams, FooResult> {
             }
         }
 
+        "should support custom java8 time data type"{
+
+            withPgConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {
+                val generatedFileContent = codegen(it, "insert into time_travel_log(from_time,to_time,duration) VALUES(:fromTime,:toTime,:duration)", "com.foo", "Foo")
+                generatedFileContent shouldContain "data class FooParams("
+                generatedFileContent shouldContain "  val fromTime: OffsetDateTime?"
+                generatedFileContent shouldContain "  val toTime: OffsetDateTime?"
+                generatedFileContent shouldContain "  val duration: LocalTime?"
+
+                generatedFileContent shouldContain "class FooParamSetter : ParamSetter<FooParams> {"
+                generatedFileContent shouldContain "  override fun map(ps: PreparedStatement, params: FooParams) {"
+                generatedFileContent shouldContain "    ps.setObject(1, params.fromTime)"
+                generatedFileContent shouldContain "    ps.setObject(2, params.toTime)"
+                generatedFileContent shouldContain "    ps.setObject(3, params.duration)"
+                generatedFileContent shouldContain "  }"
+
+                println(generatedFileContent)
+            }
+        }
+
         "should correctly map array columns"{
 
             withPgConnection(pgContainer.jdbcUrl, pgContainer.username, pgContainer.password) {

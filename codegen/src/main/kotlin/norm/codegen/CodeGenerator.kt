@@ -6,8 +6,9 @@ import norm.model.ColumnModel
 import norm.model.ParamModel
 import norm.model.SqlModel
 import norm.typemapper.DbToKtDefaultTypeMapper
+import norm.typemapper.DbToKtTypeMapperFactory
 
-class CodeGenerator(private val typeMapper: DbToKtDefaultTypeMapper = DbToKtDefaultTypeMapper()) {
+class CodeGenerator(private val typeMapper: DbToKtTypeMapperFactory = DbToKtTypeMapperFactory) {
 
     fun generate(sqlModel: SqlModel, packageName: String, baseName: String): String {
 
