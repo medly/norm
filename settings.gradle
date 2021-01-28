@@ -3,3 +3,5 @@ include 'runtime'
 include 'codegen'
 include 'cli'
 include 'api'
+include 'plugin'
+project(':plugin').setBuildFileName('plugin.gradle')
