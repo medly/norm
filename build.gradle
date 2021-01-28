@@ -4,13 +4,13 @@ plugins {
 
 subprojects {
     apply plugin: 'org.jetbrains.kotlin.jvm'
+    apply plugin: "maven-publish"
 
     group = 'com.medly.norm'
 
     repositories {
         jcenter()
     }
-
 
     dependencies {
         implementation platform('org.jetbrains.kotlin:kotlin-bom')
