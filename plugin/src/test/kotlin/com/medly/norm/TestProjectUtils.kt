@@ -2,7 +2,10 @@ package com.medly.norm
 
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
+import org.testcontainers.containers.PostgreSQLContainer
 import java.io.File
+
+class PGContainer: PostgreSQLContainer<PGContainer>()
 
 fun File.defaultProjectSetup(configuration: String = "") {
     val projectDir = "\$projectDir"
@@ -21,11 +24,13 @@ fun File.defaultProjectSetup(configuration: String = "") {
                 }
             }
 
-            norm {
-                inputDir = file('src/main/kotlin/sql')
-                outDir = file('src/main/kotlin/gen')
-            }
+            $configuration
 
+            configurations.all {
+                if (name.contains("norm")) {
+                    attributes.attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.class, Usage.JAVA_RUNTIME))
+                }
+            }
         """.trimIndent()
     )
 }

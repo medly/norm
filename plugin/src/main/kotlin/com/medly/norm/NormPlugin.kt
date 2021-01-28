@@ -29,6 +29,9 @@ class NormPlugin : Plugin<Project> {
             it.normClasspath.setFrom(project.configurations.getAt(CONFIGURATION_NORM))
             it.input.set(extension.inputDir)
             it.output.set(extension.outDir)
+            it.userName.set(extension.username)
+            it.password.set(extension.password)
+            it.jdbcUrl.set(extension.jdbcUrl)
         }
     }
 

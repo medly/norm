@@ -1,70 +1,47 @@
 package com.medly.norm
 
-import io.kotest.core.spec.Spec
+import io.kotest.assertions.throwables.shouldNotThrow
 import io.kotest.core.spec.style.StringSpec
-import io.kotest.matchers.collections.shouldHaveSize
-import io.kotest.matchers.sequences.shouldHaveSize
-import java.io.File
+import io.kotest.matchers.collections.shouldContainAll
+import org.gradle.api.UnknownTaskException
+import org.gradle.api.artifacts.UnknownConfigurationException
+import org.gradle.testfixtures.ProjectBuilder
 
-class NormPluginTest : StringSpec() {
-
-    private val tmpDir = createTempDir()
-    private val project = tmpDir.resolve("plugin-test").apply { mkdirs() }
-
-    override fun afterSpec(spec: Spec) {
-        super.afterSpec(spec)
-        File(tmpDir.toURI()).deleteRecursively()
-    }
-
+class NormPluginTest : StringSpec() {  // TODO: Remove duplicate tests from integration tests
     init {
-        //language=Groovy
-        project.defaultProjectSetup("""
-            norm {
-                inputDir = dir("src/main/kotlin/sql")
-                outDir = dir("src/main/kotlin/gen")
-            }
-        """.trimIndent())
 
         "project should have compileNorm task" {
+            val project = ProjectBuilder.builder().build()
+            project.pluginManager.apply("org.jetbrains.kotlin.jvm")
+            project.pluginManager.apply(NormPlugin::class.java)
 
-            project.build("tasks", "--all").apply {
-                val compileNormTasks = output.lineSequence()
-                    .filter { task -> task.contains("compileNorm") }
-                compileNormTasks shouldHaveSize 1
+            shouldNotThrow<UnknownTaskException> {
+                project.tasks.getAt("compileNorm")
             }
         }
 
-        "project should have norm dependencies" {
-            project.build("dependencies", "--configuration", "norm").apply {
-                val normDependencies = output.lineSequence()
-                    .filter { dependency ->
-                        dependency.contains("com.medly.norm:codegen").or(
-                            dependency.contains("com.medly.norm:runtime")
-                        )
-                    }
-                normDependencies shouldHaveSize 2
+        "project should have norm configuration" {
+            val project = ProjectBuilder.builder().build()
+            project.pluginManager.apply("org.jetbrains.kotlin.jvm")
+            project.pluginManager.apply(NormPlugin::class.java)
+
+            shouldNotThrow<UnknownConfigurationException> {
+                project.configurations.getAt("norm")
             }
         }
 
-        "project should have norm runtime implementation dependency" {
-            project.build("dependencies", "--configuration", "implementation").apply {
-                val dependencies = output.lineSequence()
-                    .filter { dependency ->
-                        dependency.contains("com.medly.norm:runtime")
-                    }
-                dependencies shouldHaveSize 1
+        "project should have norm runtime implementation dependencies" {
+            val project = ProjectBuilder.builder().build()
+            project.pluginManager.apply("org.jetbrains.kotlin.jvm")
+            project.pluginManager.apply(NormPlugin::class.java)
+
+            shouldNotThrow<UnknownConfigurationException> {
+                project.configurations.getAt("implementation").dependencies.map {
+                    "${it.group}:${it.name}:${it.version}"
+                } shouldContainAll listOf(
+                    "com.medly.norm:runtime:0.0.4"
+                )
             }
         }
-
-        //FIXME: Work in progress
-        // "project should generate files on calling compileNorm task" {
-        //     project.createSourceFile(
-        //         "src/main/kotlin/sql/find-users.sql", """
-        //         select * from users;
-        //     """.trimIndent()
-        //     )
-        //     project.build("compileNorm")
-        //     project.listFiles { _, name -> name == "FindUsers.kt" }!! shouldHaveSize 1
-        // }
     }
 }

@@ -1,7 +1,7 @@
 package com.medly.norm
 
 object Constants {
-    private const val NORM_VERSION = "0.0.4"
+    const val NORM_VERSION = "0.0.4"
     const val CONFIGURATION_NORM = "norm"
     const val CONFIGURATION_IMPLEMENTATION = "implementation"
     const val EXTENSION_NORM = "norm"
