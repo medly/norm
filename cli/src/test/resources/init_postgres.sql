@@ -19,3 +19,10 @@ CREATE TABLE owners(
     colors varchar[],
     details jsonb
 );
+
+CREATE TABLE time_travel_log(
+    id serial PRIMARY KEY,
+    from_time timestamptz,
+    to_time timestamptz,
+    duration time
+)
