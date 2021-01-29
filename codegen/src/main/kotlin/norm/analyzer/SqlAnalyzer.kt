@@ -32,7 +32,7 @@ class SqlAnalyzer(private val connection: Connection) {
 
         val leftJoinedTables = leftJoinRegex.findAll(namedParamSql).map { it.groups[1]?.value }.toList()
         val resultSetMetaData: ResultSetMetaData? = preparedStatement.metaData
-        val res = if (resultSetMetaData != null) { // it is a query
+        val columns = if (resultSetMetaData != null) { // it is a query
 
             (1..resultSetMetaData.columnCount).map {
                 val isNullable = leftJoinedTables.contains(resultSetMetaData.getTableName(it)) ||
@@ -47,6 +47,6 @@ class SqlAnalyzer(private val connection: Connection) {
         } else { // it is a command
             listOf<ColumnModel>()
         }
-        return SqlModel(params, res, preparableStatement)
+        return SqlModel(params, columns, preparableStatement)
     }
 }

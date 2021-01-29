@@ -36,7 +36,6 @@ class CodeGeneratorTest : StringSpec() {
     }
 
     init {
-
         "Query class generator" {
             val generatedFileContent =
                 codegen(connection, "select * from employees where first_name = :name order by :field", "com.foo", "Foo")
@@ -105,14 +104,14 @@ class CodeGeneratorTest : StringSpec() {
 
         "should generate nullable fields for the columns of the left joined table" {
             val query = """
-                select e.*, d.id as departmentId, d.name, c.id as combinations_id, c.colors
+                select e.*, d.id as department_id, d.name, c.id as combinations_id, c.colors
                 from employees e
                 left join departments d on e.id = d.id
                 left join combinations c on c.id = d.id
             """.trimIndent()
             val generatedFileContent = codegen(connection, query, "com.foo", "Foo")
+            println(generatedFileContent)
             generatedFileContent shouldBe "/gen/left-joined-nullable-check.expected.txt".readAsResource()
-
         }
     }
 }

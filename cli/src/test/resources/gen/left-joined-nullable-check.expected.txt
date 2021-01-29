@@ -21,7 +21,7 @@ public data class FooResult(
   public val id: Int,
   public val firstName: String?,
   public val lastName: String?,
-  public val departmentid: Int?,
+  public val departmentId: Int?,
   public val name: String?,
   public val combinationsId: Int?,
   public val colors: Array<String>?
@@ -32,7 +32,7 @@ public class FooRowMapper : RowMapper<FooResult> {
   id = rs.getObject("id") as kotlin.Int,
     firstName = rs.getObject("first_name") as kotlin.String?,
     lastName = rs.getObject("last_name") as kotlin.String?,
-    departmentid = rs.getObject("departmentid") as kotlin.Int?,
+    departmentId = rs.getObject("department_id") as kotlin.Int?,
     name = rs.getObject("name") as kotlin.String?,
     combinationsId = rs.getObject("combinations_id") as kotlin.Int?,
     colors = rs.getArray("colors").array as kotlin.Array<kotlin.String>?)
@@ -40,7 +40,7 @@ public class FooRowMapper : RowMapper<FooResult> {
 
 public class FooQuery : Query<FooParams, FooResult> {
   public override val sql: String = """
-      |select e.*, d.id as departmentId, d.name, c.id as combinations_id, c.colors
+      |select e.*, d.id as department_id, d.name, c.id as combinations_id, c.colors
       |from employees e
       |left join departments d on e.id = d.id
       |left join combinations c on c.id = d.id
