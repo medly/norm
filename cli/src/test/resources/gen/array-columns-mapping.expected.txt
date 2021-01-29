@@ -1,0 +1,41 @@
+package com.foo
+
+import java.sql.PreparedStatement
+import java.sql.ResultSet
+import kotlin.Array
+import kotlin.Int
+import kotlin.String
+import kotlin.Unit
+import norm.ParamSetter
+import norm.Query
+import norm.RowMapper
+import org.postgresql.util.PGobject
+
+public class FooParams
+
+public class FooParamSetter : ParamSetter<FooParams> {
+  public override fun map(ps: PreparedStatement, params: FooParams): Unit {
+  }
+}
+
+public data class FooResult(
+  public val id: Int,
+  public val colors: Array<String>?,
+  public val details: PGobject?
+)
+
+public class FooRowMapper : RowMapper<FooResult> {
+  public override fun map(rs: ResultSet): FooResult = FooResult(
+  id = rs.getObject("id") as kotlin.Int,
+    colors = rs.getArray("colors").array as kotlin.Array<kotlin.String>?,
+    details = rs.getObject("details") as org.postgresql.util.PGobject?)
+}
+
+public class FooQuery : Query<FooParams, FooResult> {
+  public override val sql: String = "select * from owners"
+
+  public override val mapper: RowMapper<FooResult> = FooRowMapper()
+
+  public override val paramSetter: ParamSetter<FooParams> = FooParamSetter()
+}
+

@@ -1,0 +1,30 @@
+package com.foo
+
+import java.sql.PreparedStatement
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import kotlin.String
+import kotlin.Unit
+import norm.Command
+import norm.ParamSetter
+
+public data class FooParams(
+  public val fromTime: OffsetDateTime?,
+  public val toTime: OffsetDateTime?,
+  public val duration: LocalTime?
+)
+
+public class FooParamSetter : ParamSetter<FooParams> {
+  public override fun map(ps: PreparedStatement, params: FooParams): Unit {
+    ps.setObject(1, params.fromTime)
+    ps.setObject(2, params.toTime)
+    ps.setObject(3, params.duration)
+  }
+}
+
+public class FooCommand : Command<FooParams> {
+  public override val sql: String =
+      "insert into time_travel_log(from_time,to_time,duration) VALUES(?,?,?)"
+
+  public override val paramSetter: ParamSetter<FooParams> = FooParamSetter()
+}

@@ -1,0 +1,28 @@
+package com.foo
+
+import java.sql.PreparedStatement
+import kotlin.Array
+import kotlin.String
+import kotlin.Unit
+import norm.Command
+import norm.ParamSetter
+import org.postgresql.util.PGobject
+
+public data class FooParams(
+  public val colors: Array<String>?,
+  public val details: PGobject?
+)
+
+public class FooParamSetter : ParamSetter<FooParams> {
+  public override fun map(ps: PreparedStatement, params: FooParams): Unit {
+    ps.setArray(1, ps.connection.createArrayOf("varchar", params.colors))
+    ps.setObject(2, params.details)
+  }
+}
+
+public class FooCommand : Command<FooParams> {
+  public override val sql: String = "insert into owners(colors,details) VALUES(?,?)"
+
+  public override val paramSetter: ParamSetter<FooParams> = FooParamSetter()
+}
+
