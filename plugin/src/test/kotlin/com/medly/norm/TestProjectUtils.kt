@@ -8,7 +8,6 @@ import java.io.File
 class PGContainer: PostgreSQLContainer<PGContainer>()
 
 fun File.defaultProjectSetup(configuration: String = "") {
-    val projectDir = "\$projectDir"
     //language=Groovy
     resolve("build.gradle").writeText(
         """

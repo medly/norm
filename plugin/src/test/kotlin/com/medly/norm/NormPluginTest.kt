@@ -7,7 +7,7 @@ import org.gradle.api.UnknownTaskException
 import org.gradle.api.artifacts.UnknownConfigurationException
 import org.gradle.testfixtures.ProjectBuilder
 
-class NormPluginTest : StringSpec() {  // TODO: Remove duplicate tests from integration tests
+class NormPluginTest : StringSpec() {
     init {
 
         "project should have compileNorm task" {
@@ -39,7 +39,7 @@ class NormPluginTest : StringSpec() {  // TODO: Remove duplicate tests from inte
                 project.configurations.getAt("implementation").dependencies.map {
                     "${it.group}:${it.name}:${it.version}"
                 } shouldContainAll listOf(
-                    "com.medly.norm:runtime:0.0.4"
+                    "com.medly.norm:runtime:0.0.5"
                 )
             }
         }
