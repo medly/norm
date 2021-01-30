@@ -1,0 +1,25 @@
+package com.foo
+
+import java.sql.PreparedStatement
+import kotlin.String
+import kotlin.Unit
+import norm.Command
+import norm.ParamSetter
+
+public data class FooParams(
+  public val firstName: String?,
+  public val lastName: String?
+)
+
+public class FooParamSetter : ParamSetter<FooParams> {
+  public override fun map(ps: PreparedStatement, params: FooParams): Unit {
+    ps.setObject(1, params.firstName)
+    ps.setObject(2, params.lastName)
+  }
+}
+
+public class FooCommand : Command<FooParams> {
+  public override val sql: String = "insert into employees (first_name,last_name) values (?, ?)"
+
+  public override val paramSetter: ParamSetter<FooParams> = FooParamSetter()
+}

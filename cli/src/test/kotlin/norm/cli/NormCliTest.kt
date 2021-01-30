@@ -10,11 +10,9 @@ import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.contain
 import io.kotest.matchers.string.startWith
-import norm.cli.NormCli
 import norm.test.utils.PgContainer
 import norm.test.utils.toArgs
 import java.io.File
-
 
 class NormCliTest : StringSpec() {
 
@@ -78,5 +76,3 @@ class NormCliTest : StringSpec() {
         }
     }
 }
-
-

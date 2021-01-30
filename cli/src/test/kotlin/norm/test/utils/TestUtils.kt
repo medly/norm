@@ -11,5 +11,7 @@ fun toArgs(str: String): Array<String> = str.split(" ").toTypedArray()
 
 fun codegen(conn: Connection, query: String, pkg: String, base: String): String {
     val sqlModel = SqlAnalyzer(conn).sqlModel(query)
-    return CodeGenerator().generate(sqlModel, pkg, base)
+    return CodeGenerator().generate(sqlModel, pkg, base).trim()
 }
+
+fun String.readAsResource(): String = object {}.javaClass.getResource(this).readText().trim()

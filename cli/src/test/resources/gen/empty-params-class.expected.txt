@@ -1,0 +1,38 @@
+package com.foo
+
+import java.sql.PreparedStatement
+import java.sql.ResultSet
+import kotlin.Int
+import kotlin.String
+import kotlin.Unit
+import norm.ParamSetter
+import norm.Query
+import norm.RowMapper
+
+public class FooParams
+
+public class FooParamSetter : ParamSetter<FooParams> {
+  public override fun map(ps: PreparedStatement, params: FooParams): Unit {
+  }
+}
+
+public data class FooResult(
+  public val id: Int,
+  public val firstName: String?,
+  public val lastName: String?
+)
+
+public class FooRowMapper : RowMapper<FooResult> {
+  public override fun map(rs: ResultSet): FooResult = FooResult(
+  id = rs.getObject("id") as kotlin.Int,
+    firstName = rs.getObject("first_name") as kotlin.String?,
+    lastName = rs.getObject("last_name") as kotlin.String?)
+}
+
+public class FooQuery : Query<FooParams, FooResult> {
+  public override val sql: String = "select * from  employees"
+
+  public override val mapper: RowMapper<FooResult> = FooRowMapper()
+
+  public override val paramSetter: ParamSetter<FooParams> = FooParamSetter()
+}
