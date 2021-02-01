@@ -20,16 +20,6 @@ class NormPluginTest : StringSpec() {
             }
         }
 
-        "project should have norm configuration" {
-            val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply("org.jetbrains.kotlin.jvm")
-            project.pluginManager.apply(NormPlugin::class.java)
-
-            shouldNotThrow<UnknownConfigurationException> {
-                project.configurations.getAt("norm")
-            }
-        }
-
         "project should have norm runtime implementation dependencies" {
             val project = ProjectBuilder.builder().build()
             project.pluginManager.apply("org.jetbrains.kotlin.jvm")
@@ -37,6 +27,7 @@ class NormPluginTest : StringSpec() {
 
             shouldNotThrow<UnknownConfigurationException> {
                 project.configurations.getAt("implementation").dependencies.map {
+                    print("${it.group}:${it.name}:${it.version}")
                     "${it.group}:${it.name}:${it.version}"
                 } shouldContainAll listOf(
                     "com.medly.norm:runtime:0.0.5"

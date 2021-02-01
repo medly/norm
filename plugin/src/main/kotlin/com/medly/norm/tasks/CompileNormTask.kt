@@ -1,5 +1,6 @@
 package com.medly.norm.tasks
 
+import norm.cli.main
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
@@ -12,9 +13,6 @@ import javax.inject.Inject
 open class CompileNormTask @Inject constructor(
     objects: ObjectFactory
 ) : DefaultTask() {
-
-    @get:Classpath
-    val normClasspath: ConfigurableFileCollection = objects.fileCollection()
 
     @get:Input
     val userName: Property<String> = objects.property(String::class.java)
@@ -54,14 +52,10 @@ open class CompileNormTask @Inject constructor(
 
     @TaskAction
     fun compileNorm() {
-        project.javaexec {
-            it.classpath = normClasspath
-            it.main = "norm.cli.NormCliKt"
-            it.args = getArguments()
-        }
+        main(getArguments())
     }
 
-    private fun getArguments(): List<String> {
+    private fun getArguments(): Array<String> {
         val namedArguments: List<Pair<String, String?>> = listOf(
             "-u" to userName.get(),
             "-p" to password.get(),
@@ -74,5 +68,6 @@ open class CompileNormTask @Inject constructor(
         return namedArguments
             .filter { (_, argValue) -> argValue != null }
             .flatMap { (argName, argValue) -> listOf(argName, argValue!!) }
+            .toTypedArray()
     }
 }
