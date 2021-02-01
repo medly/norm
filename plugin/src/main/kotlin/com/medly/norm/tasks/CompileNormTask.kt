@@ -46,7 +46,6 @@ open class CompileNormTask @Inject constructor(
     val input: DirectoryProperty = objects.directoryProperty()
 
     @get:OutputDirectory
-    @get:PathSensitive(PathSensitivity.RELATIVE)
     val output: DirectoryProperty = objects.directoryProperty()
 
     init {
