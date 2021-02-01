@@ -3,15 +3,15 @@ package com.medly.norm
 import io.kotest.core.spec.Spec
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.extensions.testcontainers.perSpec
-import io.kotest.matchers.sequences.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import org.testcontainers.shaded.com.google.common.io.Files
 import java.io.File
 
 class NormPluginIntegrationTest : StringSpec() {
 
     private val pgContainer = PGContainer().withInitScript("norm-plugin-init.sql")
-    private val tmpDir = createTempDir()
-    private val project = tmpDir.resolve("plugin-test").apply { mkdirs() }
+    private val tmpDir = Files.createTempDir()
+    private val project = tmpDir.resolve("plugin-test").apply { mkdir() }
 
     override fun listeners() = listOf(pgContainer.perSpec())
 
@@ -23,7 +23,8 @@ class NormPluginIntegrationTest : StringSpec() {
     override fun beforeSpec(spec: Spec) {
         super.beforeSpec(spec)
         //language=Groovy
-        project.defaultProjectSetup("""
+        project.defaultProjectSetup(
+            """
             norm {
                 username = "${pgContainer.username}"
                 password = "${pgContainer.password}"
@@ -31,39 +32,11 @@ class NormPluginIntegrationTest : StringSpec() {
                 inputDir = file("src/main/kotlin/sql")
                 outDir = file("src/main/kotlin/gen")
             }
-        """.trimIndent())
+        """.trimIndent()
+        )
     }
 
     init {
-
-        "project should have compileNorm task" {
-
-            project.build("tasks", "--all").apply {
-                val compileNormTasks = output.lineSequence()
-                    .filter { task -> task.contains("compileNorm") }
-                compileNormTasks shouldHaveSize 1
-            }
-        }
-
-        "project should have norm dependencies" {
-            project.build("dependencies", "--configuration", "norm").apply {
-                val normDependencies = output.lineSequence()
-                    .filter { dependency ->
-                        dependency.contains("com.medly.norm:codegen")
-                    }
-                normDependencies shouldHaveSize 1
-            }
-        }
-
-        "project should have norm runtime implementation dependency" {
-            project.build("dependencies", "--configuration", "implementation").apply {
-                val dependencies = output.lineSequence()
-                    .filter { dependency ->
-                        dependency.contains("com.medly.norm:runtime")
-                    }
-                dependencies shouldHaveSize 1
-            }
-        }
 
         "project should generate files on calling compileNorm task" {
             project.createSourceFile(

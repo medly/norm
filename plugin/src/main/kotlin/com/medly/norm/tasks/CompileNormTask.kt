@@ -5,15 +5,7 @@ import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.CacheableTask
-import org.gradle.api.tasks.Classpath
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.PathSensitive
-import org.gradle.api.tasks.PathSensitivity
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.*
 import javax.inject.Inject
 
 @CacheableTask
@@ -33,6 +25,21 @@ open class CompileNormTask @Inject constructor(
     @get:Input
     val jdbcUrl: Property<String> = objects.property(String::class.java)
 
+    @get:InputFiles
+    @get:Optional
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    val inputFilesAsOpts: ConfigurableFileCollection = objects.fileCollection()
+
+    @get:InputFiles
+    @get:Optional
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    val sqlFiles: ConfigurableFileCollection = objects.fileCollection()
+
+    @get:InputDirectory
+    @get:Optional
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    val basePath: DirectoryProperty = objects.directoryProperty()
+
     @get:InputDirectory
     @get:Optional
     @get:PathSensitive(PathSensitivity.RELATIVE)
@@ -47,17 +54,25 @@ open class CompileNormTask @Inject constructor(
 
     @TaskAction
     fun compileNorm() {
-        val execResult = project.javaexec {
+        project.javaexec {
             it.classpath = normClasspath
-            it.main = "norm.MainKt"
-            it.args = listOf(
-                input.asFile.get().absolutePath,
-                output.asFile.get().absolutePath,
-                jdbcUrl.get(),
-                userName.get(),
-                password.get()
-            )
+            it.main = "norm.cli.NormCliKt"
+            it.args = getArguments()
         }
-        println(execResult.exitValue)
+    }
+
+    private fun getArguments(): List<String> {
+        val namedArguments: List<Pair<String, String?>> = listOf(
+            "-u" to userName.get(),
+            "-p" to password.get(),
+            "-j" to jdbcUrl.get(),
+            "-o" to output.get().asFile.absolutePath,
+            "-b" to basePath.takeIf { it.isPresent }?.asFile?.get()?.absolutePath,
+            "-d" to input.takeIf { it.isPresent }?.asFile?.get()?.absolutePath
+        ) + inputFilesAsOpts.files.map { "-f" to it.absolutePath }
+
+        return namedArguments
+            .filter { (_, argValue) -> argValue != null }
+            .flatMap { (argName, argValue) -> listOf(argName, argValue!!) }
     }
 }

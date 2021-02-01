@@ -12,8 +12,9 @@ open class NormExtension @Inject constructor(
     val username: Property<String> = objectFactory.property { set("postgres") }
     val password: Property<String> = objectFactory.property { set("") }
     val jdbcUrl: Property<String> = objectFactory.property { set("jdbc:postgresql://localhost/postgres") }
-    val inputFilesAsOpts: ConfigurableFileCollection = objectFactory.fileCollection()
-    val sqlFiles: ConfigurableFileCollection = objectFactory.fileCollection()
+    var inputFilesAsOpts: ConfigurableFileCollection = objectFactory.fileCollection()
+    var sqlFiles: ConfigurableFileCollection = objectFactory.fileCollection()
+    val basePath: DirectoryProperty = objectFactory.directoryProperty()
     val inputDir: DirectoryProperty = objectFactory.directoryProperty()
     val outDir: DirectoryProperty = objectFactory.directoryProperty()
 }
