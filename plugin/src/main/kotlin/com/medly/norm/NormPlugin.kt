@@ -12,6 +12,8 @@ import org.gradle.api.artifacts.Dependency
 
 class NormPlugin : Plugin<Project> {
 
+    private val projectVersion = VersionLoader.getVersion()
+
     override fun apply(project: Project) {
         val extension = project.extensions.create(
             EXTENSION_NORM, NormExtension::class.java, project.objects
@@ -40,5 +42,5 @@ class NormPlugin : Plugin<Project> {
     }
 
     private fun getNormImplementationDependency(project: Project): Dependency =
-        project.dependencies.create("$NORM_RUNTIME_DEPENDENCY:${VersionLoader.getVersion()}")
+        project.dependencies.create("$NORM_RUNTIME_DEPENDENCY:${projectVersion}")
 }
