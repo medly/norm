@@ -10,7 +10,7 @@ import org.gradle.api.tasks.*
 import javax.inject.Inject
 
 @CacheableTask
-open class CompileNormTask @Inject constructor(
+open class NormCodegenTask @Inject constructor(
     objects: ObjectFactory
 ) : DefaultTask() {
 
@@ -51,7 +51,7 @@ open class CompileNormTask @Inject constructor(
     }
 
     @TaskAction
-    fun compileNorm() {
+    fun codegen() {
         main(getArguments())
     }
 

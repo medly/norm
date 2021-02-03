@@ -10,13 +10,13 @@ import org.gradle.testfixtures.ProjectBuilder
 class NormPluginTest : StringSpec() {
     init {
 
-        "project should have compileNorm task" {
+        "project should have codegen task" {
             val project = ProjectBuilder.builder().build()
             project.pluginManager.apply("org.jetbrains.kotlin.jvm")
             project.pluginManager.apply(NormPlugin::class.java)
 
             shouldNotThrow<UnknownTaskException> {
-                project.tasks.getAt("compileNorm")
+                project.tasks.getAt(Constants.NORM_CODEGEN_TASK)
             }
         }
 

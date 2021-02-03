@@ -1,11 +1,11 @@
 package com.medly.norm
 
-import com.medly.norm.Constants.COMPILE_NORM_TASK
 import com.medly.norm.Constants.CONFIGURATION_IMPLEMENTATION
 import com.medly.norm.Constants.EXTENSION_NORM
+import com.medly.norm.Constants.NORM_CODEGEN_TASK
 import com.medly.norm.Constants.NORM_RUNTIME_DEPENDENCY
 import com.medly.norm.extensions.NormExtension
-import com.medly.norm.tasks.CompileNormTask
+import com.medly.norm.tasks.NormCodegenTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
@@ -23,7 +23,7 @@ class NormPlugin : Plugin<Project> {
     }
 
     private fun registerNormTasks(project: Project, extension: NormExtension) {
-        project.tasks.register(COMPILE_NORM_TASK, CompileNormTask::class.java) {
+        project.tasks.register(NORM_CODEGEN_TASK, NormCodegenTask::class.java) {
             it.sqlFiles.setFrom(extension.sqlFiles)
             it.inputFilesAsOpts.setFrom(extension.inputFilesAsOpts)
             it.basePath.set(extension.basePath)
