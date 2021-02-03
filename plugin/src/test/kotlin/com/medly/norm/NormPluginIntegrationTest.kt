@@ -38,14 +38,14 @@ class NormPluginIntegrationTest : StringSpec() {
 
     init {
 
-        "project should generate files on calling compileNorm task" {
+        "project should generate files on calling codegen task" {
             project.createSourceFile(
                 "src/main/kotlin/sql/users/find-users.sql",
                 """
                 select * from users where name = :name;
                 """.trimIndent()
             )
-            project.build("compileNorm")
+            project.build(Constants.NORM_CODEGEN_TASK)
             File("${project.absolutePath}/src/main/kotlin/gen/users/FindUsers.kt").exists() shouldBe true
         }
     }

@@ -10,23 +10,13 @@ import org.gradle.testfixtures.ProjectBuilder
 class NormPluginTest : StringSpec() {
     init {
 
-        "project should have compileNorm task" {
+        "project should have codegen task" {
             val project = ProjectBuilder.builder().build()
             project.pluginManager.apply("org.jetbrains.kotlin.jvm")
             project.pluginManager.apply(NormPlugin::class.java)
 
             shouldNotThrow<UnknownTaskException> {
-                project.tasks.getAt("compileNorm")
-            }
-        }
-
-        "project should have norm configuration" {
-            val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply("org.jetbrains.kotlin.jvm")
-            project.pluginManager.apply(NormPlugin::class.java)
-
-            shouldNotThrow<UnknownConfigurationException> {
-                project.configurations.getAt("norm")
+                project.tasks.getAt(Constants.NORM_CODEGEN_TASK)
             }
         }
 
@@ -37,6 +27,7 @@ class NormPluginTest : StringSpec() {
 
             shouldNotThrow<UnknownConfigurationException> {
                 project.configurations.getAt("implementation").dependencies.map {
+                    print("${it.group}:${it.name}:${it.version}")
                     "${it.group}:${it.name}:${it.version}"
                 } shouldContainAll listOf(
                     "com.medly.norm:runtime:0.0.5"
