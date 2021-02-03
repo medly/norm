@@ -6,7 +6,7 @@ CREATE TABLE employees (
 
 CREATE TABLE departments (
     id SERIAL PRIMARY KEY,
-    name varchar
+    name VARCHAR UNIQUE
 );
 
 CREATE TABLE combinations(
