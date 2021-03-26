@@ -35,7 +35,7 @@ public class FooRowMapper : RowMapper<FooResult> {
     departmentId = rs.getObject("department_id") as kotlin.Int?,
     name = rs.getObject("name") as kotlin.String?,
     combinationsId = rs.getObject("combinations_id") as kotlin.Int?,
-    colors = rs.getArray("colors").array as kotlin.Array<kotlin.String>?)
+    colors = rs.getArray("colors")?.array as kotlin.Array<kotlin.String>?)
 }
 
 public class FooQuery : Query<FooParams, FooResult> {
