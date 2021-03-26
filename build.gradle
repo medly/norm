@@ -9,7 +9,7 @@ subprojects {
     group = 'com.medly.norm'
 
     repositories {
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
