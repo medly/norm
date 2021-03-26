@@ -27,7 +27,7 @@ public data class FooResult(
 public class FooRowMapper : RowMapper<FooResult> {
   public override fun map(rs: ResultSet): FooResult = FooResult(
   id = rs.getObject("id") as kotlin.Int,
-    colors = rs.getArray("colors").array as kotlin.Array<kotlin.String>?,
+    colors = rs.getArray("colors")?.array as kotlin.Array<kotlin.String>?,
     details = rs.getObject("details") as org.postgresql.util.PGobject?)
 }
 
