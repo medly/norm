@@ -4,9 +4,9 @@ plugins {
 
 subprojects {
     apply plugin: 'org.jetbrains.kotlin.jvm'
-    apply plugin: "maven-publish"
 
     group = 'com.medly.norm'
+    version = '0.0.6'
 
     repositories {
         mavenCentral()

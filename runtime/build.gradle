@@ -1,0 +1,84 @@
+plugins {
+    id 'maven-publish'
+    id 'signing'
+    id "org.jetbrains.dokka" version "0.10.1"
+}
+
+repositories {
+    mavenCentral()
+}
+
+group = "com.medly.norm"
+
+tasks {
+    dokka {
+        outputFormat = "html"
+        outputDirectory = "$buildDir/javadoc"
+    }
+}
+
+task dokkaJar(type: Jar) {
+    group = JavaBasePlugin.DOCUMENTATION_GROUP
+    description = "Assembles Kotlin docs with Dokka"
+    archiveClassifier.set("javadoc")
+    from(tasks.dokka)
+    dependsOn(tasks.dokka)
+}
+
+task sourcesJar(type: Jar) {
+    archiveClassifier.set("sources")
+    from(sourceSets.getByName("main").allSource)
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact dokkaJar
+
+            pom {
+                name = "norm runtime"
+                description = "runtime component for norm"
+                url.set("https://github.com/medly/norm")
+                licenses {
+                    license {
+                        name = "MIT"
+                        url = "https://opensource.org/licenses/MIT"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "kdabir"
+                        name = "Kunal Dabir"
+                        email = "kd@medly.com"
+                    }
+                }
+                scm {
+                    connection = "scm:git:git@github.com:medly/norm.git"
+                    developerConnection = "scm:git:ssh://github.com/medly/norm.git"
+                    url = "https://github.com/medly/norm"
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            credentials {
+                username System.getenv("OSSRH_USERNAME")
+                password System.getenv("OSSRH_PASSWORD")
+            }
+
+            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+        }
+    }
+}
+
+
+signing {
+    def signingKey = System.getenv("OSSRH_SIGNING_SECRET_KEY")
+    def signingPassword = System.getenv("OSSRH_SIGNING_PASSPHRASE")
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    sign publishing.publications.mavenJava // must come after above block
+}
