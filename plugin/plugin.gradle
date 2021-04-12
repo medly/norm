@@ -13,6 +13,7 @@ dependencies {
 project.afterEvaluate {
     tasks.withType(ProcessResources) { processResources ->
         inputs.property('projectVersion', project.version)
+        duplicatesStrategy = DuplicatesStrategy.WARN
 
         filesMatching("version.properties") {
             expand('projectVersion': project.version)
