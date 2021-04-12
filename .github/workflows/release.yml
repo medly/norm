@@ -1,8 +1,16 @@
 name: Release
 
 on:
-  release:
-    types: [ published ]
+#  release:
+#    types: [ published ]
+
+## TODO use the version to update gradle version
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Version'
+        required: false
+
 
 jobs:
   build:
@@ -19,13 +27,13 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
-      - name: Publish norm-runtime to Maven Central
+      - name: Publish to Maven Central
         env:
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_SIGNING_PASSPHRASE: ${{ secrets.OSSRH_SIGNING_PASSPHRASE }}
           OSSRH_SIGNING_SECRET_KEY: ${{ secrets.OSSRH_SIGNING_SECRET_KEY }}
-        run: ./gradlew runtime:publish
+        run: ./gradlew runtime:publish codegen:publish cli:publish api:publish
 
       - name: Publish norm plugin to Gradle Plugin Portal
         env:

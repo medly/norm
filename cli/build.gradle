@@ -1,0 +1,15 @@
+plugins {
+    id 'application'
+    id 'com.medly.norm-maven-publish'
+}
+
+description = "Command Line Interface for Norm's Code generator"
+
+applicationName = 'norm-codegen'
+mainClassName = "norm.cli.NormCliKt"
+
+dependencies {
+    implementation project(":codegen")
+    implementation "com.github.ajalt:clikt:2.7.1"
+}
+

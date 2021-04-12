@@ -43,27 +43,5 @@ subprojects {
     }
 }
 
-project(":codegen") {
-    dependencies {
-        implementation project(":runtime")
-        api project(":api")
 
-        api 'org.postgresql:postgresql:42.2.19'
-        implementation 'com.squareup:kotlinpoet:1.7.2'
 
-        implementation 'org.atteo:evo-inflector:1.2.2'
-        implementation 'org.apache.commons:commons-text:1.9'
-    }
-}
-
-project(":cli") {
-    apply plugin: 'application'
-
-    applicationName = 'norm-codegen'
-    mainClassName = "norm.cli.NormCliKt"
-
-    dependencies {
-        implementation project(":codegen")
-        implementation "com.github.ajalt:clikt:2.7.1"
-    }
-}

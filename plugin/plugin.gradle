@@ -29,3 +29,18 @@ gradlePlugin {
         }
     }
 }
+
+pluginBundle {
+    website = 'https://github.com/medly/norm'
+    vcsUrl = 'https://github.com/medly/norm'
+    description = "Generate kotlin data classes from SQL queries using NORM"
+    tags = ['kotlin', 'postgres', 'codegen']
+
+    plugins {
+        norm {
+            id = "com.medly.norm"
+            displayName = "Norm Gradle Plugin"
+        }
+    }
+}
+
