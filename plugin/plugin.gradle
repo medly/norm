@@ -36,6 +36,12 @@ pluginBundle {
     description = "Generate kotlin data classes from SQL queries using NORM"
     tags = ['kotlin', 'postgres', 'codegen']
 
+    mavenCoordinates {
+        groupId = project.group.toString()
+        artifactId = project.name
+        version = project.version.toString()
+    }
+
     plugins {
         norm {
             id = "com.medly.norm"
