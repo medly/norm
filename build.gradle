@@ -6,7 +6,6 @@ subprojects {
     apply plugin: 'org.jetbrains.kotlin.jvm'
 
     group = 'com.medly.norm'
-    version = '0.0.6'
 
     repositories {
         mavenCentral()
