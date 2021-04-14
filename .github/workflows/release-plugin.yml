@@ -1,9 +1,6 @@
-name: Release
+name: Release Plugin
 
 on:
-#  release:
-#    types: [ published ]
-
   workflow_dispatch:
     inputs:
       version:
@@ -22,17 +19,6 @@ jobs:
         with:
           java-version: 11
           distribution: 'zulu'
-
-      - name: Build with Gradle
-        run: ./gradlew -Pversion=${{ github.event.inputs.version }} build
-
-      - name: Publish to Maven Central
-        env:
-          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_SIGNING_PASSPHRASE: ${{ secrets.OSSRH_SIGNING_PASSPHRASE }}
-          OSSRH_SIGNING_SECRET_KEY: ${{ secrets.OSSRH_SIGNING_SECRET_KEY }}
-        run: ./gradlew -Pversion=${{ github.event.inputs.version }} runtime:publish codegen:publish cli:publish api:publish
 
       - name: Publish norm plugin to Gradle Plugin Portal
         env:

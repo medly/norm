@@ -41,9 +41,14 @@ publishing {
             artifact sourcesJar
             artifact dokkaJar
 
-            pom {
+            pom { pom ->
                 name = project.name
-                description = project.description
+
+                // set up lazy property
+                project.afterEvaluate {
+                    pom.description = it.description
+                }
+
                 url.set("https://github.com/medly/norm")
                 licenses {
                     license {
