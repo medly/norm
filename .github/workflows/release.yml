@@ -7,7 +7,7 @@ on:
 ## TODO use the version to update gradle version
   workflow_dispatch:
     inputs:
-      name:
+      version:
         description: 'Version'
         required: false
 
