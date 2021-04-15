@@ -30,9 +30,9 @@ nav_order: 2
 
 
 
-The database url, username, and password here refer to local instance. Also it is highly recommended to use a schema migration utility like Liquibase or Flyway to manage schema versioning. 
-Important
-{: .label .label-red }
+    > The database url, username, and password here refer to local instance. Also it is highly recommended to use a schema migration utility like Liquibase or Flyway to manage schema versioning. 
+
+
 
 
 
