@@ -1,3 +1,9 @@
+---
+title: Quick Start
+has_children: false
+nav_order: 2
+---
+
 ## Quick Start
 
 1. Add Norm's Gradle plugin to your data-access project in case of a multi-module project, or root to project
