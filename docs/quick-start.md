@@ -39,7 +39,9 @@ nav_order: 2
 3. Create a sql file in `inputDir` under a directory path which should reflect our package name e.g `com/foo/person-by-age.sql`
 
     ```SQL
-    SELECT * FROM persons WHERE AGE > :age;
+      SELECT * 
+      FROM persons 
+      WHERE AGE > :age;
     ```
 
 
