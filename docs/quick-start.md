@@ -48,6 +48,6 @@ $ ./gradlew normCodegen
       FindPersonQuery().query(connection, FindPersonParams("28"))
   }.forEach {
       println(it.toString())
-   }
+  }
 ```
 
