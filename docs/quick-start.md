@@ -19,9 +19,9 @@ nav_order: 2
 
     ```groovy
     norm {
+        jdbcUrl = "jdbc:postgresql://localhost/postgres"
         username = "postgres"
         password = ""
-        jdbcUrl = "jdbc:postgresql://localhost/postgres"
         inputDir = file("src/main/sql")
         outDir = file("src/main/gen")
         basePath = file("src/main/gen")
