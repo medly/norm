@@ -1,3 +1,9 @@
+---
+title: About
+has_children: false
+nav_order: 1
+---
+
 # Norm
 
 NORM is an acronym for Not an ORM. It is purpose-built to leverage the power of SQL with Kotlin. 
