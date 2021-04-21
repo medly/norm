@@ -68,7 +68,7 @@ SELECT * FROM persons WHERE AGE > :age;
 ./gradlew normCodegen
 ```
 
-## 4. Take a look at the generated code
+### 4. Take a look at the generated code
 
 The content of generated file would look like:
 ```kotlin 
@@ -124,7 +124,9 @@ class GetAllPersonsAboveGivenAgeQuery : Query<GetAllPersonsAboveGivenAgeParams,
 }
 ```
 
-##5. Using the generated code
+> DO NOT alter the content of this file as it will get overwritten in next codegen.
+
+### 5. Using the generated code
 
 To run any query/command, a DataSource connection of postgres is required.
 
