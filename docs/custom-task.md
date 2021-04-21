@@ -4,7 +4,7 @@ has_children: false
 nav_order: 5
 ---
 
-#### Using a custom Gradle Task
+## Using a custom Gradle Task
 
 IF we cannot use the recommended Norm plugin for some reason, but can use gradle, then 
 we can add a Gradle task in `build.gradle` which would execute Norm's code generation
