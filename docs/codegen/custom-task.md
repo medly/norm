@@ -1,6 +1,7 @@
 ---
 title: Custom Task
 has_children: false
+parent: Alternative ways to genarate code
 nav_order: 2
 ---
 
