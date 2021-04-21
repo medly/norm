@@ -1,7 +1,7 @@
 ---
 title: Custom Task
 has_children: false
-nav_order: 5
+nav_order: 2
 ---
 
 ## Using a custom Gradle Task
