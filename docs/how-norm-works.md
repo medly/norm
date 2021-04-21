@@ -33,7 +33,7 @@ Create the schema and tables needed for your application or repository.
 
 Let's take an example of `person` table and create it in the default `public schema` of default `postgres database`. 
 
-```SQL
+```sql
 create table persons(
     id SERIAL PRIMARY KEY,
     name VARCHAR,
@@ -43,7 +43,7 @@ create table persons(
 );
 ```
 
-> we can use the `psql -p 5432 -d postgres` to run the following query
+> we can use the `psql -p 5432 -d postgres` from command line to run the above
 
 All the migrations need to be run before using norm codegen to generate classes.
 
