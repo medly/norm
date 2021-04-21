@@ -42,6 +42,9 @@ Options:
 For the generate code to work, we need to explicitly add the following dependency to the project that contains the generated code
 
 ```
+repositories {		
+    mavenCentral()
+}
 // add norm runtime dependency
 implementation "com.medly.norm:runtime:$normVersion"
 ```
