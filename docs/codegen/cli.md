@@ -2,6 +2,7 @@
 title: CLI
 has_children: false
 nav_order: 3
+parent: Alternative ways to genarate code
 ---
 
 ## Command Line Interface
