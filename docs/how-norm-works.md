@@ -20,11 +20,14 @@ Norm requires us to have an active database connection to precompile queries for
 - Adds extentions on these interfaces to be able to execute query/command, map result to a list, execute batch commands and queries etc.
 
 
-## Putting it to Use
+## Putting it to use
 
-#### 1. Set up the schema
+This example requires to have a PostgreSQL server running (preferably locally)
 
-Start a postgres server locally. Create schema and tables needed for your application or repository.
+
+### 1. Set up the schema
+
+Create the schema and tables needed for your application or repository.
 
 > It is highly recommended to manage the database schema migrations (DDL statements) with a tool like Liquibase or Flyway.
 
@@ -40,7 +43,7 @@ create table persons(
 );
 ```
 
-> we can use the `psql -p 5432 -d postgres` to run the following query: 
+> we can use the `psql -p 5432 -d postgres` to run the following query
 
 All the migrations need to be run before using norm codegen to generate classes.
 
