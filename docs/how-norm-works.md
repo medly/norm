@@ -31,7 +31,7 @@ Create the schema and tables needed for your application or repository.
 
 > It is highly recommended to manage the database schema migrations (DDL statements) with a tool like Liquibase or Flyway.
 
-Let's take an example of `person` table and create it in the default `public schema` of default `postgres database`. 
+For example, let's create a `person` table in the default `public` schema of default `postgres` database. 
 
 ```sql
 create table persons(
