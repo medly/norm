@@ -10,6 +10,8 @@ import norm.api.NormApi
 import norm.fs.IO
 import norm.fs.globSearch
 import norm.util.withPgConnection
+import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import java.io.File
 
 
@@ -67,7 +69,9 @@ class NormCli : CliktCommand( // command name is inferred as norm-cli
 
         // If dir is provided, relativize to itself
         inputDir?.let { dir ->
-            globSearch(dir, "**.sql").forEach { sqlFile ->
+           val fileList =globSearch(dir, "**.sql")
+           val modifiedFiles = fileList.filter { modifiedFilesFromGitOnly().contains(it) }
+            modifiedFiles.forEach { sqlFile ->
                 IO(sqlFile, dir, outDir).process(normApi::generate)
             }
         }
@@ -76,6 +80,14 @@ class NormCli : CliktCommand( // command name is inferred as norm-cli
         (inputFilesAsOpts + sqlFiles).forEach { sqlFile ->
             IO(sqlFile, basePath, outDir).process(normApi::generate)
         }
+    }
+
+    fun modifiedFilesFromGitOnly(): List<String> {
+        val builder = FileRepositoryBuilder()
+        val repo = builder.setGitDir(File("." + "/.git")).setMustExist(true)
+            .build()
+        val git = Git(repo)
+        return git.diff().call().map { diffEntry -> diffEntry.newPath }
     }
 }
 
