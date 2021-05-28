@@ -1,7 +1,7 @@
 package norm.transaction
 
 /**
- * A result model which will be returned on execution on [transaction].
+ * A result model which will be returned on execution on [executeTransaction].
  */
 sealed class TransactionResult<R> {
     data class Success<R>(val data: R) : TransactionResult<R>()
