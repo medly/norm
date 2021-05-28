@@ -15,8 +15,8 @@ import javax.sql.DataSource
  * ```
  *     val result = dataSource.executeTransaction {
  *         val user = FindUserByIdQuery().query(it, FindUserByIdParams(id))
- *         ReportUserViewedMessageCommand().command(it, ReportUserViewedMessageParams(messageId, user.id))
- *         GetMessageViewCountQuery().query(it, GetMessageViewCountParams(messageId)).first()
+ *         AddUserItemOneCommand().command(it, AddUserItemOneParams(item1, user.id))
+ *         AddUserItemTwoCommand().command(it, AddUserItemTwoParams(item2, user.id))
  *     }
  *
  *     // Check whether transaction is successful
@@ -38,6 +38,7 @@ fun <R> DataSource.executeTransaction(block: (Connection) -> R): TransactionResu
                 .let { result -> TransactionResult.Success(result) }
         } catch (exception: SQLException) {
             exception.printStackTrace()
+
             val rollbackError = runCatching { connection.rollback() }.exceptionOrNull()
             TransactionResult.Error(rollbackError ?: exception)
         }

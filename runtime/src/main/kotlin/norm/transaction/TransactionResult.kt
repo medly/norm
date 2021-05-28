@@ -13,7 +13,7 @@ sealed class TransactionResult<R> {
     val isSuccessful: Boolean = this is Success
 
     /**
-     * Forcefully tries to return a successful result.
+     * Forcefully tries to provide a successful result data.
      * If transaction is not successful, it throws [IllegalStateException].
      */
     fun get(): R = runCatching { (this as Success).data }
