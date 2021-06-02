@@ -30,6 +30,8 @@ class DbToKtDefaultTypeMapper: DbToKtTypeMapper {
 
             "jsonb" -> PGobject::class
 
+            "uuid" -> java.util.UUID::class
+
             "varchar" -> String::class
             "text" -> String::class
             "_varchar" -> String::class
