@@ -110,12 +110,14 @@ class NormCli : CliktCommand( // command name is inferred as norm-cli
     }
 
     private fun modifiedFilesFromGit(directory: File, fileList: Sequence<File>): List<File> {
-        val builder = FileRepositoryBuilder()
-        val repo = builder.setGitDir(File(directory.parent + "/.git")).setMustExist(false)
+
+        val repo = FileRepositoryBuilder()
+            .setGitDir(File(directory.parent + "/.git"))
+            .setMustExist(false)
             .build()
+        val git = Git(repo)
         return when {
             repo.objectDatabase.exists() -> {
-                val git = Git(repo)
                 return when {
                     git.status().call().untracked.isNotEmpty() -> git.status().call().untracked
                     git.status().call().modified.isNotEmpty() -> git.status().call().modified
@@ -124,7 +126,6 @@ class NormCli : CliktCommand( // command name is inferred as norm-cli
             }
             else -> fileList.toList()
         }
-
     }
 }
 
