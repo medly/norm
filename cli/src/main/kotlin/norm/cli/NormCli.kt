@@ -109,17 +109,20 @@ class NormCli : CliktCommand( // command name is inferred as norm-cli
         }
     }
 
-    fun modifiedFilesFromGit(directory: File, fileList: Sequence<File>): Sequence<File> {
+    fun modifiedFilesFromGit(directory: File, fileList: Sequence<File>): List<File> {
         val builder = FileRepositoryBuilder()
         val repo = builder.setGitDir(File(directory.parent + "/.git")).setMustExist(false)
             .build()
         return when {
             repo.objectDatabase.exists() -> {
                 val git = Git(repo)
-                val diff = git.diff().call().map { diffEntry -> diffEntry.newPath }
-                fileList.filter { file -> diff.contains(file) }
+                return when {
+                    git.status().call().untracked.isNotEmpty() -> git.status().call().untracked
+                    git.status().call().modified.isNotEmpty() -> git.status().call().modified
+                    else -> git.diff().call().map { diffEntry -> diffEntry.newPath }
+                }.map { File(directory.parent+"/"+it) }.filter { it.name.endsWith("sql") }
             }
-            else -> fileList
+            else -> fileList.toList()
         }
 
     }
