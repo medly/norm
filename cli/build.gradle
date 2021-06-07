@@ -11,6 +11,7 @@ mainClassName = "norm.cli.NormCliKt"
 dependencies {
     implementation project(":codegen")
     implementation "com.github.ajalt:clikt:2.7.1"
+    testImplementation "io.mockk:mockk:1.11.0"
     implementation group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '5.11.0.202103091610-r'
 }
 

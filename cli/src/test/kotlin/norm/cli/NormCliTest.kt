@@ -10,7 +10,6 @@ import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.contain
 import io.kotest.matchers.string.startWith
-import io.mockk.Runs
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
@@ -18,8 +17,6 @@ import norm.test.utils.PgContainer
 import norm.test.utils.toArgs
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.internal.storage.file.FileRepository
-import org.eclipse.jgit.lib.ObjectDatabase
-import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import java.io.File
 
@@ -85,7 +82,6 @@ class NormCliTest : StringSpec() {
         }
         "Should generate kotlin file for untracked file in git"{
 
-            val git = mockk<Git>(relaxed = true)
             val repo = mockk<FileRepository>(relaxed = true)
             mockkConstructor(FileRepositoryBuilder::class)
             mockkConstructor(Git::class)
