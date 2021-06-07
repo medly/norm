@@ -109,7 +109,7 @@ class NormCli : CliktCommand( // command name is inferred as norm-cli
         }
     }
 
-    fun modifiedFilesFromGit(directory: File, fileList: Sequence<File>): List<File> {
+    private fun modifiedFilesFromGit(directory: File, fileList: Sequence<File>): List<File> {
         val builder = FileRepositoryBuilder()
         val repo = builder.setGitDir(File(directory.parent + "/.git")).setMustExist(false)
             .build()

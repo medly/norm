@@ -17,6 +17,7 @@ import io.mockk.mockkConstructor
 import norm.test.utils.PgContainer
 import norm.test.utils.toArgs
 import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.internal.storage.file.FileRepository
 import org.eclipse.jgit.lib.ObjectDatabase
 import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
@@ -85,13 +86,15 @@ class NormCliTest : StringSpec() {
         "Should generate kotlin file for untracked file in git"{
 
             val git = mockk<Git>(relaxed = true)
-            mockkConstructor(Repository::class)
-            val mockObjectDB = mockk<ObjectDatabase>(relaxed = true)
-            every { git.status().call().untracked } returns emptySet()
-            every { git.status().call().modified } returns emptySet()
-            every { git.diff().call()} returns emptyList()
-            every { anyConstructed<Repository>().objectDatabase } returns mockObjectDB
-            every { mockObjectDB.exists() } returns true
+            val repo = mockk<FileRepository>(relaxed = true)
+            mockkConstructor(FileRepositoryBuilder::class)
+            mockkConstructor(Git::class)
+            every { anyConstructed<FileRepositoryBuilder>().setGitDir(any()).setMustExist(any()).build() } returns repo
+            every { repo.objectDatabase.exists() } returns true
+            every { anyConstructed<Git>().status().call().untracked } returns setOf("sql/employees/add-new-employee.sql")
+            every { anyConstructed<Git>().status().call().modified } returns emptySet()
+            every { anyConstructed<Git>().diff().call() } returns emptyList()
+
             val args = toArgs("-d src/test/resources/gitrepository/sql -b src/test/resources/gitrepository/sql -o $outputDir ${pgStr()}")
             NormCli().parse(args)
             File("$outputDir/employees/AddNewEmployee.kt").exists() shouldBe true
