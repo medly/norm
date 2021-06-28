@@ -113,5 +113,11 @@ class CodeGeneratorTest : StringSpec() {
             println(generatedFileContent)
             generatedFileContent shouldBe "/gen/left-joined-nullable-check.expected.txt".readAsResource()
         }
+
+        "should generate kotlin file with sql type uuid mapped to UUID." {
+            val generatedFileContent = codegen(connection, "SELECT * FROM logs", "com.foo", "Foo")
+
+            generatedFileContent shouldBe "/gen/uuid-column-type-generator.expected.txt".readAsResource()
+        }
     }
 }

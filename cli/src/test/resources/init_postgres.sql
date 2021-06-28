@@ -25,4 +25,12 @@ CREATE TABLE time_travel_log(
     from_time timestamptz,
     to_time timestamptz,
     duration time
-)
+);
+
+CREATE TABLE logs(
+  id uuid PRIMARY KEY,
+  column_name VARCHAR,
+  old_value VARCHAR,
+  new_value VARCHAR,
+  captured_at TIMESTAMPTZ
+);
