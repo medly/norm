@@ -3,7 +3,7 @@ package norm.typemapper
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asTypeName
 import norm.api.typemapper.DbToKtTypeMapper
-import java.util.ServiceLoader
+import java.util.*
 
 object DbToKtTypeMapperFactory {
     private val loader = ServiceLoader.load(DbToKtTypeMapper::class.java)

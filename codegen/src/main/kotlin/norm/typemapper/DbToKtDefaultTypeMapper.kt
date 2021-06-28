@@ -5,7 +5,7 @@ import org.postgresql.util.PGobject
 import java.math.BigDecimal
 import kotlin.reflect.KClass
 
-class DbToKtDefaultTypeMapper: DbToKtTypeMapper {
+class DbToKtDefaultTypeMapper : DbToKtTypeMapper {
 
     override fun accepts(type: String): Boolean = true
 

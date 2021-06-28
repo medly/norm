@@ -24,9 +24,9 @@ class SqlAnalyzer(private val connection: Connection) {
         val parameterMetaData = preparedStatement.parameterMetaData
         val params = (1..parameterMetaData.parameterCount).map {
             ParamModel(
-                    paramNames[it - 1].substring(1),
-                    parameterMetaData.getParameterTypeName(it), // db type
-                    parameterMetaData.isNullable(it) != ParameterMetaData.parameterNoNulls
+                paramNames[it - 1].substring(1),
+                parameterMetaData.getParameterTypeName(it), // db type
+                parameterMetaData.isNullable(it) != ParameterMetaData.parameterNoNulls
             )
         }
 
@@ -38,10 +38,10 @@ class SqlAnalyzer(private val connection: Connection) {
                 val isNullable = leftJoinedTables.contains(resultSetMetaData.getTableName(it)) ||
                     (resultSetMetaData.isNullable(it) != ResultSetMetaData.columnNoNulls)
                 ColumnModel(
-                        toCamelCase(resultSetMetaData.getColumnName(it)),
-                        resultSetMetaData.getColumnTypeName(it),
-                        resultSetMetaData.getColumnName(it),
-                        isNullable
+                    toCamelCase(resultSetMetaData.getColumnName(it)),
+                    resultSetMetaData.getColumnTypeName(it),
+                    resultSetMetaData.getColumnName(it),
+                    isNullable
                 )
             }
         } else { // it is a command

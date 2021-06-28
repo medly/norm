@@ -5,7 +5,6 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import norm.model.ColumnModel
 import norm.model.ParamModel
 import norm.model.SqlModel
-import norm.typemapper.DbToKtDefaultTypeMapper
 import norm.typemapper.DbToKtTypeMapperFactory
 
 class CodeGenerator(private val typeMapper: DbToKtTypeMapperFactory = DbToKtTypeMapperFactory) {
@@ -23,15 +22,19 @@ class CodeGenerator(private val typeMapper: DbToKtTypeMapperFactory = DbToKtType
                 .also { if (params.isNotEmpty()) it.addModifiers(KModifier.DATA) }
                 .primaryConstructor(
                     FunSpec.constructorBuilder()
-                        .addParameters(params.distinctBy { it.name }.map {
-                            ParameterSpec.builder(it.name, getTypeName(it)).build()
-                        }).build()
+                        .addParameters(
+                            params.distinctBy { it.name }.map {
+                                ParameterSpec.builder(it.name, getTypeName(it)).build()
+                            }
+                        ).build()
                 )
-                .addProperties(params.distinctBy { it.name }.map {
-                    PropertySpec.builder(it.name, getTypeName(it))
-                        .initializer(it.name)
-                        .build()
-                })
+                .addProperties(
+                    params.distinctBy { it.name }.map {
+                        PropertySpec.builder(it.name, getTypeName(it))
+                            .initializer(it.name)
+                            .build()
+                    }
+                )
                 .build()
         )
 
@@ -41,12 +44,14 @@ class CodeGenerator(private val typeMapper: DbToKtTypeMapperFactory = DbToKtType
                     ClassName("norm", "ParamSetter")
                         .parameterizedBy(ClassName(packageName, paramsClassName))
                 )
-                .addFunction(FunSpec.builder("map")
-                    .addModifiers(KModifier.OVERRIDE)
-                    .addParameter("ps", ClassName("java.sql", "PreparedStatement"))
-                    .addParameter("params", ClassName(packageName, paramsClassName))
-                    .also { addStatementsForParams(it, params) }
-                    .build())
+                .addFunction(
+                    FunSpec.builder("map")
+                        .addModifiers(KModifier.OVERRIDE)
+                        .addParameter("ps", ClassName("java.sql", "PreparedStatement"))
+                        .addParameter("params", ClassName(packageName, paramsClassName))
+                        .also { addStatementsForParams(it, params) }
+                        .build()
+                )
                 .build()
         )
 
@@ -66,7 +71,8 @@ class CodeGenerator(private val typeMapper: DbToKtTypeMapperFactory = DbToKtType
                             .build()
                     )
                     .addProperty(
-                        PropertySpec.builder("paramSetter",
+                        PropertySpec.builder(
+                            "paramSetter",
                             ClassName("norm", "ParamSetter")
                                 .parameterizedBy(ClassName(packageName, paramsClassName))
                         )
@@ -86,23 +92,32 @@ class CodeGenerator(private val typeMapper: DbToKtTypeMapperFactory = DbToKtType
                     .addModifiers(KModifier.DATA)
                     .primaryConstructor(
                         FunSpec.constructorBuilder()
-                            .addParameters(cols.map {
-                                ParameterSpec.builder(it.fieldName,
-                                    getTypeName(it)
-                                ).build()
-                            }).build()
+                            .addParameters(
+                                cols.map {
+                                    ParameterSpec.builder(
+                                        it.fieldName,
+                                        getTypeName(it)
+                                    ).build()
+                                }
+                            ).build()
                     )
-                    .addProperties(cols.map {
-                        PropertySpec.builder(it.fieldName, getTypeName(it))
-                            .initializer(it.fieldName)
-                            .build()
-                    })
+                    .addProperties(
+                        cols.map {
+                            PropertySpec.builder(it.fieldName, getTypeName(it))
+                                .initializer(it.fieldName)
+                                .build()
+                        }
+                    )
                     .build()
             )
 
             val constructArgs = "\n" + cols.joinToString(",\n  ") {
                 if (it.colType.startsWith("_"))
-                    "${it.fieldName} = rs.getArray(\"${it.colName}\")${if (it.isNullable) "?" else ""}.array as ${getTypeName(it)}"
+                    "${it.fieldName} = rs.getArray(\"${it.colName}\")${if (it.isNullable) "?" else ""}.array as ${
+                    getTypeName(
+                        it
+                    )
+                    }"
                 else
                     "${it.fieldName} = rs.getObject(\"${it.colName}\") as ${getTypeName(it)}"
             }
@@ -113,12 +128,14 @@ class CodeGenerator(private val typeMapper: DbToKtTypeMapperFactory = DbToKtType
                         ClassName("norm", "RowMapper")
                             .parameterizedBy(ClassName(packageName, resultClassName))
                     )
-                    .addFunction(FunSpec.builder("map")
-                        .addModifiers(KModifier.OVERRIDE)
-                        .addParameter("rs", ClassName("java.sql", "ResultSet"))
-                        .addStatement("return %T($constructArgs)", ClassName(packageName, resultClassName))
-                        .returns(ClassName(packageName, resultClassName))
-                        .build())
+                    .addFunction(
+                        FunSpec.builder("map")
+                            .addModifiers(KModifier.OVERRIDE)
+                            .addParameter("rs", ClassName("java.sql", "ResultSet"))
+                            .addStatement("return %T($constructArgs)", ClassName(packageName, resultClassName))
+                            .returns(ClassName(packageName, resultClassName))
+                            .build()
+                    )
                     .build()
             )
 
@@ -128,7 +145,8 @@ class CodeGenerator(private val typeMapper: DbToKtTypeMapperFactory = DbToKtType
                         ClassName("norm", "Query")
                             .parameterizedBy(
                                 ClassName(packageName, paramsClassName),
-                                ClassName(packageName, resultClassName))
+                                ClassName(packageName, resultClassName)
+                            )
                     )
                     .addProperty(
                         PropertySpec.builder("sql", String::class)
@@ -136,7 +154,8 @@ class CodeGenerator(private val typeMapper: DbToKtTypeMapperFactory = DbToKtType
                             .initializer("%S", preparableStmt)
                             .build()
                     ).addProperty(
-                        PropertySpec.builder("mapper",
+                        PropertySpec.builder(
+                            "mapper",
                             ClassName("norm", "RowMapper")
                                 .parameterizedBy(ClassName(packageName, resultClassName))
                         )
@@ -145,7 +164,8 @@ class CodeGenerator(private val typeMapper: DbToKtTypeMapperFactory = DbToKtType
                             .build()
                     )
                     .addProperty(
-                        PropertySpec.builder("paramSetter",
+                        PropertySpec.builder(
+                            "paramSetter",
                             ClassName("norm", "ParamSetter")
                                 .parameterizedBy(ClassName(packageName, paramsClassName))
                         )
@@ -161,21 +181,26 @@ class CodeGenerator(private val typeMapper: DbToKtTypeMapperFactory = DbToKtType
     }
 
     private fun getTypeName(it: ColumnModel) =
-        if (it.colType.startsWith("_")) ARRAY.parameterizedBy(typeMapper.getType(it.colType, false)).copy(nullable = it.isNullable)
+        if (it.colType.startsWith("_")) ARRAY.parameterizedBy(typeMapper.getType(it.colType, false))
+            .copy(nullable = it.isNullable)
         else typeMapper.getType(it.colType, it.isNullable)
 
     private fun getTypeName(it: ParamModel) =
-        if (it.dbType.startsWith("_")) ARRAY.parameterizedBy(typeMapper.getType(it.dbType, false)).copy(nullable = it.isNullable)
+        if (it.dbType.startsWith("_")) ARRAY.parameterizedBy(typeMapper.getType(it.dbType, false))
+            .copy(nullable = it.isNullable)
         else typeMapper.getType(it.dbType, it.isNullable)
 
     private fun addStatementsForParams(fb: FunSpec.Builder, params: List<ParamModel>) =
         params.forEachIndexed { i, pm ->
             when {
-                pm.dbType.startsWith("_") -> fb.addStatement("ps.setArray(${i + 1}, ps.connection.createArrayOf(\"${pm.dbType.removePrefix("_")}\", params.${pm.name}))")
+                pm.dbType.startsWith("_") -> fb.addStatement(
+                    "ps.setArray(${i + 1}, ps.connection.createArrayOf(\"${
+                    pm.dbType.removePrefix(
+                        "_"
+                    )
+                    }\", params.${pm.name}))"
+                )
                 else -> fb.addStatement("ps.setObject(${i + 1}, params.${pm.name})")
             }
-
         }
 }
-
-
