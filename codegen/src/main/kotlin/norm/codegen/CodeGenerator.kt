@@ -2,18 +2,15 @@ package norm.codegen
 
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.FileSpec.Builder
-import norm.model.ColumnModel
-import norm.model.ParamDetails
-import norm.model.Sql
-import norm.model.SqlModel
+import norm.model.*
 
-class CodeGenerator() {
+object CodeGenerator {
 
     fun generate(sqlModels: List<SqlModel>, packageName: String, baseName: String): String {
         val fileBuilder = FileSpec.builder(packageName, baseName)
         var resultClassName: String? = null
         sqlModels.map { sqlModel ->
-            val paramDetails = ParamDetails.make(baseName, fileBuilder, packageName, sqlModel.params)
+            val paramDetails = ParamBuilder.build(baseName, fileBuilder, packageName, sqlModel.params)
             Sql.make(sqlModel.cols).generate(baseName, fileBuilder, packageName, sqlModel, paramDetails)
             if (sqlModel.cols.isNotEmpty() && resultClassName.isNullOrEmpty()) {
                 resultClassName = "${baseName}Result"
