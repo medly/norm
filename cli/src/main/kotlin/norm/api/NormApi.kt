@@ -20,6 +20,6 @@ class NormApi(
      */
     fun generate(query: String, packageName: String, baseName: String): String {
         val sqlModel = sqlAnalyzer.sqlModel(query)
-        return codeGenerator.generate(sqlModel, packageName, baseName)
+        return codeGenerator.generate(listOf(sqlModel), packageName, baseName)
     }
 }
