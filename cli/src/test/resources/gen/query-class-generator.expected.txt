@@ -21,12 +21,6 @@ public class FooParamSetter : ParamSetter<FooParams> {
   }
 }
 
-public data class FooResult(
-  public val id: Int,
-  public val firstName: String?,
-  public val lastName: String?
-)
-
 public class FooRowMapper : RowMapper<FooResult> {
   public override fun map(rs: ResultSet): FooResult = FooResult(
   id = rs.getObject("id") as kotlin.Int,
@@ -41,3 +35,9 @@ public class FooQuery : Query<FooParams, FooResult> {
 
   public override val paramSetter: ParamSetter<FooParams> = FooParamSetter()
 }
+
+public data class FooResult(
+  public val id: Int,
+  public val firstName: String?,
+  public val lastName: String?
+)
