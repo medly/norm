@@ -3,8 +3,8 @@
 name: Upgrade Gradle
 
 on:
-  push:
-    branches: [ master ]
+#  push:
+#    branches: [ master ]
 
   schedule:
     - cron: 0 2 * * 1
