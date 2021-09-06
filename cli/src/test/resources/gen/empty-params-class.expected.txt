@@ -9,7 +9,7 @@ import norm.ParamSetter
 import norm.Query
 import norm.RowMapper
 
-public class FooParams
+public class FooParams()
 
 public class FooParamSetter : ParamSetter<FooParams> {
   public override fun map(ps: PreparedStatement, params: FooParams): Unit {
