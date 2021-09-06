@@ -5,7 +5,7 @@ import org.postgresql.util.PGobject
 import java.math.BigDecimal
 import kotlin.reflect.KClass
 
-class DbToKtDefaultTypeMapper: DbToKtTypeMapper {
+class DbToKtDefaultTypeMapper : DbToKtTypeMapper {
 
     override fun accepts(type: String): Boolean = true
 
@@ -29,6 +29,8 @@ class DbToKtDefaultTypeMapper: DbToKtTypeMapper {
             "timestamp" -> java.sql.Timestamp::class
 
             "jsonb" -> PGobject::class
+
+            "uuid" -> java.util.UUID::class
 
             "varchar" -> String::class
             "text" -> String::class
