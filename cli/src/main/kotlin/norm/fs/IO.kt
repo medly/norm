@@ -17,8 +17,11 @@ class IO(
     private val outputKotlinFile = File(outFileParentDir, "$baseName.kt")
 
     fun process(block: (query: String, packageName: String, baseName: String) -> String) {
-        outFileParentDir.mkdirs()
-        outputKotlinFile.writeText(block(sqlFile.readText(), packageName, baseName))
+        try {
+            outFileParentDir.mkdirs()
+            outputKotlinFile.writeText(block(sqlFile.readText(), packageName, baseName))
+        } catch(e: Exception) {
+            print("Failed to process ${sqlFile.absolutePath}: ${e.message}")
+        }
     }
 }
-

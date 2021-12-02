@@ -35,13 +35,14 @@ class NormCliTest : StringSpec() {
     private fun pgStr() = "-j ${pgContainer.jdbcUrl} -u ${pgContainer.username} -p ${pgContainer.password}"
 
     init {
-        "should generate kotlin file for all sql files" {
+        "should generate kotlin file for all valid sql files" {
             val args = toArgs("-d src/test/resources/sql -b src/test/resources/sql -o $outputDir ${pgStr()}")
 
             NormCli().parse(args)
 
             File("$outputDir/employees/AddNewEmployee.kt").exists() shouldBe true
             File("$outputDir/departments/AddNewDepartment.kt").exists() shouldBe true
+            File("$outputDir/employees/FetchAllEmployees.kt").exists() shouldBe false
         }
 
         "should generate kotlin file for specified files only" {
