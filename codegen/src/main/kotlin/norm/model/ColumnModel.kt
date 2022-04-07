@@ -11,7 +11,9 @@ data class ColumnModel(
     val isNullable: Boolean
 ) {
     fun getTypeName() =
-        if (colType.startsWith("_")) ARRAY.parameterizedBy(DbToKtTypeMapperFactory.getType(colType, false))
+        if (colType.startsWith(ARRAY_TYPE_PREFIX)) ARRAY.parameterizedBy(DbToKtTypeMapperFactory.getType(colType, false))
             .copy(nullable = this.isNullable)
         else DbToKtTypeMapperFactory.getType(colType, isNullable)
 }
+
+const val ARRAY_TYPE_PREFIX = "_"

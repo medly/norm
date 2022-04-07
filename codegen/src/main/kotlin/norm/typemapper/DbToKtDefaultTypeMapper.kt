@@ -1,16 +1,22 @@
 package norm.typemapper
 
+import java.math.BigDecimal
+import java.util.*
+
 import norm.api.typemapper.DbToKtTypeMapper
 import org.postgresql.util.PGobject
-import java.math.BigDecimal
 import kotlin.reflect.KClass
+
 
 class DbToKtDefaultTypeMapper : DbToKtTypeMapper {
 
     override fun accepts(type: String): Boolean = true
 
     override fun getType(type: String): KClass<*> {
-        return when (type.toLowerCase()) {
+
+        val dataType = type.removePrefix(ARRAY_TYPE_PREFIX)
+
+        return when (dataType.lowercase(Locale.getDefault())) {
             "int4" -> Int::class
             "int" -> Int::class
             "serial" -> Int::class
@@ -34,9 +40,9 @@ class DbToKtDefaultTypeMapper : DbToKtTypeMapper {
 
             "varchar" -> String::class
             "text" -> String::class
-            "_varchar" -> String::class
-            "_int4" -> Int::class
             else -> String::class
         }
     }
 }
+
+const val ARRAY_TYPE_PREFIX = "_"

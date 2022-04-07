@@ -34,3 +34,12 @@ CREATE TABLE logs(
   new_value VARCHAR,
   captured_at TIMESTAMPTZ
 );
+
+CREATE TABLE requests
+(
+  id         serial PRIMARY KEY,
+  documentId int8,
+  type       varchar,
+  status     varchar,
+  requested_at TIMESTAMPTZ
+);
