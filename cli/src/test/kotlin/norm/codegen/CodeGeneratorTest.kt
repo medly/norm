@@ -127,7 +127,7 @@ class CodeGeneratorTest : StringSpec() {
                 "com.foo",
                 "Foo"
             )
-            generatedFileContent shouldBe "/gen/int8-type-array-agg.expected.txt".readAsResource()
+            generatedFileContent shouldBe "/gen/array-agg-type.expected.txt".readAsResource()
         }
     }
 }
