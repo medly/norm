@@ -119,5 +119,15 @@ class CodeGeneratorTest : StringSpec() {
 
             generatedFileContent shouldBe "/gen/uuid-column-type-generator.expected.txt".readAsResource()
         }
+
+        "should generate kotlin file with sql ARRAY type mapped to kotlin.Array<kotlin.*>" {
+            val generatedFileContent = codegen(
+                connection,
+                "SELECT ARRAY_AGG(id) AS ids, ARRAY_AGG(documentId) AS docIds, ARRAY_AGG(type) AS arr_types, STRING_AGG(type, '-') AS str_types FROM requests GROUP BY type",
+                "com.foo",
+                "Foo"
+            )
+            generatedFileContent shouldBe "/gen/array-agg-type.expected.txt".readAsResource()
+        }
     }
 }
