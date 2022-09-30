@@ -15,7 +15,7 @@ subprojects {
         implementation platform('org.jetbrains.kotlin:kotlin-bom')
         implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
 
-        testImplementation 'org.testcontainers:postgresql:1.16.0'
+        testImplementation 'org.testcontainers:postgresql:1.17.4'
         testImplementation 'org.postgresql:postgresql:42.2.23'
 
         testImplementation 'io.kotest:kotest-runner-junit5-jvm:4.6.2'
