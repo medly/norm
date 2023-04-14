@@ -10,8 +10,14 @@ import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.contain
 import io.kotest.matchers.string.startWith
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkConstructor
 import norm.test.utils.PgContainer
 import norm.test.utils.toArgs
+import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.internal.storage.file.FileRepository
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import java.io.File
 
 class NormCliTest : StringSpec() {
@@ -74,6 +80,22 @@ class NormCliTest : StringSpec() {
 
             exception.message should startWith("Invalid value for \"-f\":")
             exception.message should contain("is a directory")
+        }
+        "Should generate kotlin file for untracked file in git"{
+
+            val repo = mockk<FileRepository>(relaxed = true)
+            mockkConstructor(FileRepositoryBuilder::class)
+            mockkConstructor(Git::class)
+            every { anyConstructed<FileRepositoryBuilder>().setGitDir(any()).setMustExist(any()).build() } returns repo
+            every { repo.objectDatabase.exists() } returns true
+            every { anyConstructed<Git>().status().call().untracked } returns setOf("sql/employees/add-new-employee.sql")
+            every { anyConstructed<Git>().status().call().modified } returns emptySet()
+            every { anyConstructed<Git>().diff().call() } returns emptyList()
+
+            val args = toArgs("-d src/test/resources/gitrepository/sql -b src/test/resources/gitrepository/sql -o $outputDir ${pgStr()}")
+            NormCli().parse(args)
+            File("$outputDir/employees/AddNewEmployee.kt").exists() shouldBe true
+
         }
     }
 }
